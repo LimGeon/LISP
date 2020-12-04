@@ -58,16 +58,26 @@ def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
             return True
         elif var[0] == "'":
             return True
-        else:
-            return False
     elif isinstance(var, int):
         return True
     elif isinstance(var, float):
         return True
-    else:
-        return False
 
-
+def zerop_procedure(var):
+    if isinstance(var,int):
+        if var == 0:
+            return True
+        else:
+            return False
+    elif isinstance(var,int): #정수일때랑 합쳐줘도 되나?
+        if var == 0:
+            return True
+    elif isinstance(var,str):
+        if var in mem:
+            if mem[var] == 0:
+                return True
+    else: #숫자가 아닐 때.. 사실 나중에 Error 처리 해줘야하는데 일단 False로
+        return False        
 
 def eval(x, dic):
     if isinstance(x, str):
@@ -93,7 +103,9 @@ def eval(x, dic):
     elif x[0] == 'ATOM':
         (_, var) = x
         return atom_procedure(var)
-
+    elif x[0] == 'ZEROP':
+        (_, var) = x
+        return zerop_procedure(var)
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
