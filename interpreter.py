@@ -3,7 +3,7 @@
 import math
 import operator as op
 from functools import reduce
-from parser import expression_parser
+from parser1 import expression_parser
 
 lisp_to_python_dic = {
     '+':lambda *x: reduce(op.add, *x), '-':lambda *x: reduce(op.sub, *x),
@@ -38,6 +38,8 @@ lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
 
+mem = {}
+
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -46,9 +48,17 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
 
+def setq_procedure(sym, var):
+    mem[sym] = var
+    return var
+
 def eval(x, dic):
     if isinstance(x, str):
-        return dic[x]
+        if x in dic:
+            return dic[x]
+        else:
+            return mem[x]
+
     elif not isinstance(x, list):
         return x
     elif x[0] == 'quote':
@@ -61,9 +71,9 @@ def eval(x, dic):
     elif x[0] == 'define':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
-    elif x[0] == 'set!':
-        (_, var, exp) = x
-        dic[var] = eval(exp, dic)
+    elif x[0] == 'SETQ':
+        (_, var, data) = x
+        return setq_procedure(var, data)
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
@@ -89,10 +99,9 @@ def eval(x, dic):
 #print(eval(['if', ['<', 5 ,10], ['+', 10, 5],['-', 10, 5]], lisp_to_python_dic))
 
 def main():
-    file_name = input()
-    with open(file_name, 'r') as f:
-        data = f.read().strip()
-    print(eval(expression_parser(data).pop(0), lisp_to_python_dic))
+     while(True):
+        userInput = input("> ")
+        print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
 
 if __name__ == "__main__":
     main()

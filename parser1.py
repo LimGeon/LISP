@@ -103,10 +103,13 @@ key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
                                     binary_parser, arithemetic_parser, unary_parser)
 
 def main():
-    file_name = input()
-    with open(file_name, 'r') as f:
-        data = f.read().strip()
-    print(expression_parser(data))
+    # file_name = input()
+    # with open(file_name, 'r') as f:
+    #     data = f.read().strip()
+    
+    while(True):
+        userInput = input("> ")
+        print(expression_parser(userInput))
 
 if __name__ == "__main__":
     main()
