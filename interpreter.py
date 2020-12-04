@@ -100,7 +100,7 @@ def eval(x, dic):
 
 def main():  
      while(True):
-        userInput = input("> ") #d #s
+        userInput = input("> ") #d #s #f
         print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
 
 if __name__ == "__main__":
