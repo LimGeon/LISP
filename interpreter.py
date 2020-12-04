@@ -38,8 +38,6 @@ lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
 
-mem = {}
-
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -48,17 +46,11 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
 
-def setq_procedure(sym, var):
-    mem[sym] = var
-    return var
-
 def eval(x, dic):
     if isinstance(x, str):
-        if x in dic:
-            return dic[x]
-        else:
-            return mem[x]
-
+        return dic[x]
+    elif isinstance(x,int):
+        return x
     elif not isinstance(x, list):
         return x
     elif x[0] == 'quote':
@@ -72,15 +64,19 @@ def eval(x, dic):
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
     elif x[0] == 'SETQ':
-        (_, var, data) = x
-        return setq_procedure(var, data)
+        (_, var, exp) = x
+        dic[var]=eval(exp,dic)
+        return eval(exp,dic)
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
     else:
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
-        return proc(args)
+        try: return proc(args)
+        except TypeError:
+            args=[eval(exp,dic) for exp in x[0:]]
+            return args
 
 #print(eval(['define', 'x', 100], lisp_to_python_dic))
 
@@ -100,8 +96,11 @@ def eval(x, dic):
 
 def main():  
      while(True):
-        userInput = input("> ") #d #s
-        print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
+        file_name=input()
+        with open(file_name, 'r') as f:
+            data=f.read().strip()
+        print(expression_parser(data))
+        print(eval(expression_parser(data).pop(0), lisp_to_python_dic))
 
 if __name__ == "__main__":
     main()
