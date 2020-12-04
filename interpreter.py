@@ -52,13 +52,29 @@ def setq_procedure(sym, var):
     mem[sym] = var
     return var
 
+def atom_procedure(var):
+    if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 mem에 있는지
+        if var in mem:
+            return True
+        elif var[0] == "'":
+            return True
+        else:
+            return False
+    elif isinstance(var, int):
+        return True
+    elif isinstance(var, float):
+        return True
+    else:
+        return False
+
+
+
 def eval(x, dic):
     if isinstance(x, str):
         if x in dic:
             return dic[x]
         else:
             return mem[x]
-
     elif not isinstance(x, list):
         return x
     elif x[0] == 'quote':
@@ -74,6 +90,9 @@ def eval(x, dic):
     elif x[0] == 'SETQ':
         (_, var, data) = x
         return setq_procedure(var, data)
+    elif x[0] == 'ATOM':
+        (_, var) = x
+
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
