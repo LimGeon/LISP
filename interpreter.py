@@ -63,13 +63,20 @@ def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
     elif isinstance(var, float):
         return True
 
+def numberp_procedure(var):
+    if isinstance(var,int) or isinstance(var,float):
+        return True
+    elif isinstance(var,str):
+        if var in mem:
+            if isinstance(mem[var],int) or isinstance(mem[var],float):
+                return True
+
+
 def zerop_procedure(var):
     if isinstance(var,int):
         if var == 0:
             return True
-        else:
-            return False
-    elif isinstance(var,int): #정수일때랑 합쳐줘도 되나?
+    elif isinstance(var,float): #int일때랑 합쳐줘도 되나?
         if var == 0:
             return True
     elif isinstance(var,str):
@@ -103,6 +110,9 @@ def eval(x, dic):
     elif x[0] == 'ATOM':
         (_, var) = x
         return atom_procedure(var)
+    elif x[0] == 'NUMBERP':
+        (_, var) = x
+        return numberp_procedure(var)
     elif x[0] == 'ZEROP':
         (_, var) = x
         return zerop_procedure(var)
