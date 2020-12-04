@@ -52,7 +52,7 @@ def setq_procedure(sym, var):
     mem[sym] = var
     return var
 
-def atom_procedure(var): ## 안돼.. 왜안돼?
+def atom_procedure(var): #완료 ㅎㅅㅎ
     if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 mem에 있는지
         if var in mem:
             return True
