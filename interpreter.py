@@ -38,6 +38,7 @@ lisp_to_python_dic = {
 lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
+
 mem = {}
 
 def CAR_procedure(carList, dic):
@@ -83,16 +84,12 @@ def lambda_procedure(parms, body, *args):
 def list_procedure(*args):
     T = ["'"]
     L = []
+    #print("args 제대로 출력: ", args)
     for k in args: #차례로 받아오기
         L.append(eval(k,lisp_to_python_dic))
-         
     T.append(L)
     return T
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 7f4a85c87c47aee16b5f7cd47c7565b1ba91f7ab
 def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
         return True
@@ -200,12 +197,6 @@ def eval(x, dic):
                 return eval(nthList, dic)[1][eval(exp, dic)]
             elif isList(eval(nthList, dic))[1] == 1:  # 저장된 리스트
                 return mem[eval(nthList, dic)][eval(exp, dic)]
-    elif x[0] == 'STRINGP':
-        (_,var)=x
-        if isinstance(eval(x,dic),str):
-            return True
-        else:
-            return False
     elif x[0]=='CONS':
         (_, var, consList) = x
         T=["'"]
@@ -239,21 +230,24 @@ def eval(x, dic):
 
     elif x[0] == 'MEMBER':
         (_, word, memberList) = x
+        T = ["'"]
         if memberList in mem:
             memberList = mem[memberList][1]
             startIndex = memberList.index(word[1])
-            return memberList[startIndex:]
+            T.append(memberList[startIndex:])
+            return T
     
     elif x[0]=='REMOVE':
         (_, var, exp)=x
+        L = ["'"]
         word=eval(var,dic)
         removeList=eval(exp,dic)
-        print(removeList[1])
         while(True):
             try:
                 removeList[1].remove(word)
             except ValueError:
-                return removeList[1]
+                L.append(removeList[1])
+                return L
     
     elif x[0] == 'ASSOC':
         (_, key, assocList) = x 
@@ -324,8 +318,6 @@ def eval(x, dic):
         T = ["'"]
         T.append(appendedList)
         return T
-<<<<<<< HEAD
-=======
      ########## Predicate 함수 ############
 
     elif x[0] == 'NULL':
@@ -377,7 +369,6 @@ def eval(x, dic):
             return False
         
             
->>>>>>> 7f4a85c87c47aee16b5f7cd47c7565b1ba91f7ab
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
