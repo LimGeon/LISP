@@ -388,12 +388,70 @@ def eval(x, dic):
             args=[eval(exp,dic) for exp in x[0:]]
             return args
 
-    
+def printlist(l):
+    if l[0] == "'" and isinstance(l[1],list):
+        tmp = "("
+        for i in l[1]:
+            if not isinstance(i,list): #리스트가 아닌 경우
+                if isinstance(i, str):
+                    if not i == l[1][0] :
+                        tmp = tmp + " " + i
+                    else:
+                        tmp = tmp + i
+                else:
+                    if not i == l[1][0]:
+                        tmp = tmp + " " + str(i)
+                    else:
+                        tmp = tmp + str(i)
+            else: #리스트인 경우
+                if not i == l[1][0] : 
+                    tmp = tmp +" "+ printlist(i)
+                else :
+                    tmp = tmp +printlist(i)
+
+                
+        
+        tmp = tmp + ")"
+        return tmp
 
 def main():
     while(True):
         userInput = input("> ")
-        print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
+        # print("type : " , type(eval(expression_parser(userInput).pop(0), lisp_to_python_dic)))
+        # print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
+
+
+        rv = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
+        if isinstance(rv, list): # 리스트면
+            print(printlist(rv))
+        else: # 리스트가 아니면
+            print(rv)
+
+
+    # while(True):
+        
+        # userInput = input("> ")
+        # # if isinstance(eval(expression_parser(userInput).pop(0), lisp_to_python_dic), list):
+        # #     L = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
+        # #     if L[0] == "'" and isinstance(L[1], list):
+        # #         tmp = "("
+        # #         for i in L[1]:
+        # #             if isinstance(i,str):
+        # #                 if not i == L[1][0]:
+        # #                     tmp = tmp +" "+  i
+        # #                 else:
+        # #                     tmp = tmp + i
+        # #             elif isinstance(i, int):
+        # #                 if not i == L[1][0]:
+        # #                     tmp = tmp + " " + str(i)
+        # #                 else:
+        # #                     tmp = tmp + str(i)
+        # #         tmp = tmp + ")"
+        # #         print(tmp)
+            
+        # # else:
+        #     print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
+        
 
 if __name__ == "__main__":
     main()
