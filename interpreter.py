@@ -1,5 +1,5 @@
 #interpreter
-
+#xxeol test
 import math
 import operator as op
 from functools import reduce
@@ -18,7 +18,6 @@ lisp_to_python_dic = {
     'car':     lambda x: x[0],
     'cdr':     lambda x: x[1:],
     'cons':    lambda x, y: [x] + y,
-    'reverse': lambda x: x[::-1],
     'eq?':     op.is_,
     'equal?':  op.eq,
     'length':  len,
@@ -40,6 +39,12 @@ lisp_to_python_dic.update(vars(math))
 dic_new2 = {}
 
 mem = {}
+
+def isList(vlist):
+    if vlist[0] == "'":
+        return True
+    else:
+        False
 
 def lambda_procedure(parms, body, *args):
     dic_new = {}
@@ -129,7 +134,25 @@ def eval(x, dic):
 
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
-    
+    elif x[0] == 'CAR':
+        (_, carList) = x
+        if isList(carList) == True:
+            return carList[1][0]
+    elif x[0] == 'CDR':
+        (_, cdrList) = x
+        if isList(cdrList) == True:
+            cdrList = cdrList[1][1:]
+            return cdrList
+    elif x[0]=='NTH':
+        (_,exp,nthList)=x
+        if isList(nthList):
+            if atom_procedure(nthList[1][exp]):
+                return nthList[1][exp]
+    elif x[0]=='REVERSE':
+        (_,reverselist)=x
+        if isList(reverselist)==True:
+            reverselist[1].reverse()
+            return reverselist[1]
     elif x[0] == 'NUMBERP':
         (_, var) = x
         return numberp_procedure(var)
@@ -171,4 +194,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
