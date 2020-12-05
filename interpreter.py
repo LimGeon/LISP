@@ -130,12 +130,15 @@ def eval(x, dic):
         dic[var] = eval(exp, dic)
     elif x[0] == 'SETQ':
         (_, var, exp) = x
-        mem[var]=eval(exp,dic)
-        if isinstance(mem[var], list):
+        #
+        if isinstance(eval(exp,dic), list):
             L = ["'"]
-            L.append(mem[var])
+            L.append(eval(exp,dic))
+            mem[var] = L
             return L
-        return mem[var]
+        else:
+            mem[var]=eval(exp,dic)
+            return mem[var]
     elif x[0] == 'LIST':
         (_, *args) = x
         return list_procedure(*args)
