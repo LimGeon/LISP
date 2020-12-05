@@ -76,14 +76,13 @@ def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
     if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 mem에 있는지
         if var in mem:
             if not isinstance(var[mem], list):
-                return T
+                return True
     elif isinstance(var, int):
-        return T
+        return True
     elif isinstance(var, float):
-        return T
-    elif isinstance(var, list):
+        return True
+    #elif isinstance(var, list):
         
-
 
 def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
@@ -137,7 +136,31 @@ def eval(x, dic):
     elif x[0] == 'ATOM':
         (_, var) = x
         return atom_procedure(var)
+    elif x[0]=='CONS':
+        (_, var, consList) = x
+        print(var)
+        print(consList)
+        L=[]
+        if isinstance(var,int) or isinstance(var,float):
+            L.append(var)
+        elif isinstance(var, str):
+            if var in mem:
+                L.append(mem[var])
+        elif isList(var)[0]:  # true 이면
+            if isList(var)[1] == 0:  # 직접 입력
+                L.append(var[1])
+            elif isList(var)[1] == 1:  # 저장된 리스트
+                L.append(mem[var])
 
+        if isinstance(consList, str):
+            if consList in mem:
+                L.extend(mem[consList])
+        elif isList(consList)[0]:  # true 이면
+            if isList(consList)[1] == 0:  # 직접 입력
+                L.extend(consList[1])
+            elif isList(consList)[1] == 1:  # 저장된 리스트
+                L.extend(mem[consList])
+        return L
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':

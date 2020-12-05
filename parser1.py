@@ -16,7 +16,7 @@ def quote_parser(data):
             tmp.append(tmp2[0])
             return [tmp, data[tmp2[1]+2:]]
         else: #심볼처리
-            atom_reg_ex = re.compile('[^\t\n\r\f\v\)]+') #문자 or 숫자
+            atom_reg_ex = re.compile('\w+') #문자 or 숫자
             atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
             if atom_match:
                 L = []
@@ -36,7 +36,7 @@ def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
             index = index + 1
             return [L,index]
         elif data[index] not in ('\t','\n','\r','\f','\v'): #공백이 아니면
-           list_reg_ex = re.compile('[^ \t\n\r\f\v\(\)]+')
+           list_reg_ex = re.compile('\w+')
            list_match = list_reg_ex.match(data[index:])
            if list_match:
                L.append(atom(data[index:list_match.end()+index].upper()))
