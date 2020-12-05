@@ -38,8 +38,6 @@ lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
 
-mem = {}
-
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -48,13 +46,10 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
 
-def setq_procedure(sym, var):
-    mem[sym] = var
-    return var
 
 def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
-    if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 mem에 있는지
-        if var in mem:
+    if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 lisp_to_python_dic에 있는지
+        if var in lisp_to_python_dic:
             return True
         elif var[0] == "'":
             return True
@@ -67,10 +62,9 @@ def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
         return True
     elif isinstance(var,str):
-        if var in mem:
-            if isinstance(mem[var],int) or isinstance(mem[var],float):
+        if var in lisp_to_python_dic:
+            if isinstance(lisp_to_python_dic[var],int) or isinstance(lisp_to_python_dic[var],float):
                 return True
-
 
 def zerop_procedure(var):
     if isinstance(var,int):
@@ -80,8 +74,8 @@ def zerop_procedure(var):
         if var == 0:
             return True
     elif isinstance(var,str):
-        if var in mem:
-            if mem[var] == 0:
+        if var in lisp_to_python_dic:
+            if lisp_to_python_dic[var] == 0:
                 return True
     else: #숫자가 아닐 때.. 사실 나중에 Error 처리 해줘야하는데 일단 False로
         return False        
@@ -91,7 +85,7 @@ def eval(x, dic):
         if x in dic:
             return dic[x]
         else:
-            return mem[x]
+            return lisp_to_python_dic[x]
     elif not isinstance(x, list):
         return x
     elif x[0] == 'quote':
@@ -105,17 +99,39 @@ def eval(x, dic):
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
     elif x[0] == 'SETQ':
-        (_, var, data) = x
-        return setq_procedure(var, data)
+        (_, var, exp) = x
+        dic[var]=eval(exp,dic)
+        return dic[var]
+    ########## Predicate 함수 ############
     elif x[0] == 'ATOM':
         (_, var) = x
         return atom_procedure(var)
+
+    #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
+    #elif x[0] == 'NULL':
+    
     elif x[0] == 'NUMBERP':
         (_, var) = x
         return numberp_procedure(var)
     elif x[0] == 'ZEROP':
         (_, var) = x
         return zerop_procedure(var)
+    
+    #(MINUSP X) ; X가 음수일 때만 참(true)을 반환함. X가 숫자가 아니면 ERROR 발생
+    #elif x[0] == 'MINUSP':
+
+    #(EQUAL X Y) ;  X와 Y가 같으면 참(true)을 반환함
+    #elif x[0] == 'EQUAL':
+
+    #(< X Y) ;  X < Y 이면 참(true)을 반환함.
+    #elif x[0] == '<':
+
+    #(>= X Y) ;  X >= Y 이면 참(true)을 반환함.
+    #elif x[0] == '>=':
+    
+    #(STRINGP X) ;  X가 STRING일 때만 참(true)을 반환함.
+    #elif x[0] == 'STRINGP':
+
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
@@ -124,25 +140,10 @@ def eval(x, dic):
         args = [eval(exp, dic) for exp in x[1:]]
         return proc(args)
 
-#print(eval(['define', 'x', 100], lisp_to_python_dic))
-
-#print(eval(['define', 'y', 5], lisp_to_python_dic))
-
-#print(eval(['lambda', ['x', 'y'], ['*', 'x', 'y'], 5, 2], lisp_to_python_dic))
-
-#print(eval(['*', ['+', 5, 7], ['/', 4, 2]], lisp_to_python_dic))
-
-#print(eval(['*', 'x', 'x'], lisp_to_python_dic))
-
-#print(eval(expression_parser('(+ 5 (* 3 2) )')[0], lisp_to_python_dic))
-
-#print(eval(['>', 5 ,10], lisp_to_python_dic))
-
-#print(eval(['if', ['<', 5 ,10], ['+', 10, 5],['-', 10, 5]], lisp_to_python_dic))
 
 def main():  
      while(True):
-        userInput = input("> ") #d #s #f
+        userInput = input("> ")
         print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
 
 if __name__ == "__main__":
