@@ -145,11 +145,11 @@ def eval(x, dic):
         return atom_procedure(var)
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
-        if isList(nthList)[0]: #true 이면
-            if isList(nthList)[1] == 0: # 직접 입력
-                return nthList[1][exp]
-            elif isList(nthList)[1] == 1: #저장된 리스트
-                return mem[nthList][1][exp]
+        if isList(eval(nthList, dic))[0]:  # true 이면
+            if isList(eval(nthList, dic))[1] == 0:  # 직접 입력
+                return eval(nthList, dic)[1][eval(exp, dic)]
+            elif isList(eval(nthList, dic))[1] == 1:  # 저장된 리스트
+                return mem[eval(nthList, dic)][eval(exp, dic)]
     elif x[0]=='CONS':
         (_, var, consList) = x
         L=[]
