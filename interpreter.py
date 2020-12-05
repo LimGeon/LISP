@@ -214,7 +214,14 @@ def eval(x, dic):
         for assocTuple in assocList[1]:
             if key == assocTuple[1][0]:
                 return assocTuple[1][1]
-
+    
+    elif x[0] == 'SUBST':
+        (_, word, word_sub, substList) = x
+        word = eval(word, dic)
+        word_sub = eval(word_sub, dic)
+        sub_idx = substList[1].index(word_sub)
+        substList[1][sub_idx] = word
+        return substList
     #     else:
     #         print("Error")
     
