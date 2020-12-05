@@ -293,21 +293,6 @@ def eval(x, dic):
         return T
      ########## Predicate 함수 ############
 
-    #(MINUSP X) ; X가 음수일 때만 참(true)을 반환함. X가 숫자가 아니면 ERROR 발생
-    #elif x[0] == 'MINUSP':
-
-    #(EQUAL X Y) ;  X와 Y가 같으면 참(true)을 반환함
-    #elif x[0] == 'EQUAL':
-
-    #(< X Y) ;  X < Y 이면 참(true)을 반환함.
-    #elif x[0] == '<':
-
-    #(>= X Y) ;  X >= Y 이면 참(true)을 반환함.
-    #elif x[0] == '>=':
-    
-    #(STRINGP X) ;  X가 STRING일 때만 참(true)을 반환함.
-    #elif x[0] == 'STRINGP':
-
     elif x[0] == 'NULL':
         (_, exp) = x
         if exp=='':
@@ -327,11 +312,40 @@ def eval(x, dic):
                 return False
         else:
             print("Error")
+    
+    elif x[0] == 'EQUAL':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic)==eval(var2,dic)
+        except TypeError:
+            return False
+
+    elif x[0] == '<':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic)<eval(var2,dic)
+        except TypeError:
+            return False
+
+    elif x[0] == '>=':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic)>=eval(var2,dic)
+        except TypeError:
+            return False
         
             
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
+
+    elif x[0] == 'STRINGP':
+        (_,var)=x
+        if isinstance(eval(x,dic),str):
+            return True
+        else:
+            return False
+
     else:
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
@@ -340,6 +354,7 @@ def eval(x, dic):
             args=[eval(exp,dic) for exp in x[0:]]
             return args
 
+    
 
 def main():
     while(True):
