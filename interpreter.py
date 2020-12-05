@@ -59,6 +59,7 @@ def lambda_procedure(parms, body, *args):
     return eval(body, dic_new2)
 
 def list_procedure(*args):
+    T = ["'"]
     L = []
     for k in list(args): #차례로 받아오기
         if isinstance(k, str): #str 일때 -> mem에 없으면 에러!
@@ -70,8 +71,11 @@ def list_procedure(*args):
         elif isinstance(k, list): # ' 으로 시작하는.. -> symbol 인지 list 인지 구별 해줘야하나?
             if k[0] == "'": # '으로 시작하면
                 L.append(k[1])
-    return L
+    T.append(L)
+    return T
 
+
+##수정요망##
 def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
     if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 mem에 있는지
         if var in mem:
@@ -107,7 +111,6 @@ def zerop_procedure(var):
         return False        
 
 def eval(x, dic):
-
     if isinstance(x, str):
         if x in mem:
             return mem[x]
