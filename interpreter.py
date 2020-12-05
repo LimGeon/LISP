@@ -93,18 +93,23 @@ def list_procedure(*args):
     T.append(L)
     return T
 
-##수정요망##
-def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
-    if isinstance(var, str):  # 찐 string인지 심볼인지 #찐 string이면 mem에 있는지
-        if var in mem:
-            return True
-    elif isinstance(var,list):
-        if var[0]=="'":
-            return True
-    elif isinstance(var, int):
-        return True
-    elif isinstance(var, float):
-        return True
+# def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
+#     # if isinstance(var, str):  # 찐 string인지 심볼인지 #찐 string이면 mem에 있는지
+#     #     if var in mem:
+#     #         return True
+#     # elif isinstance(var,list):
+#     #     if var[0] == "'":
+#     #         if not isinstance(var[1],list):
+#     #             return True
+#     #         else:
+#     #             var = eval(var,lisp_to_python_dic)
+#     #             atom_procedure(var)
+#     # elif isinstance(var, int):
+#     #     return True
+#     # elif isinstance(var, float):
+#     #     return True
+#     # else:
+#     #     return False
 
 def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
@@ -138,7 +143,6 @@ def eval(x, dic):
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
-
         if not isinstance(x[1],list):
             (_, exp) = x
             return exp
@@ -179,8 +183,14 @@ def eval(x, dic):
             return L
 
     elif x[0] == 'ATOM':
-        (_, var) = x
-        return atom_procedure(var)
+        (_, exp) = x
+        exp = eval(exp, dic)
+        if isinstance(exp, list):
+            return False
+        elif isinstance(exp, int) or isinstance(exp, float):
+            return True
+        elif isinstance(exp,str):
+            return True
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
         if isList(eval(nthList, dic))[0]:  # true 이면
@@ -190,23 +200,34 @@ def eval(x, dic):
                 return mem[eval(nthList, dic)][eval(exp, dic)]
     elif x[0]=='CONS':
         (_, var, consList) = x
+        T=["'"]
         L=[]
+        var = eval(var, dic)
+        consList = eval(consList, dic)
+        print(var)
         if isinstance(var,int) or isinstance(var,float):
             L.append(var)
         elif isinstance(var, str):
             if var in mem:
                 L.append(mem[var])
-        elif atom_procedure(var):
-            L.extend(var[1])
+            L.append(var)
+        elif isinstance(var, list):
+            L.append(var)
+            
         if isinstance(consList, str):
             if consList in mem:
-                L.extend(mem[consList])
+                if mem[consList][0] == "'":
+                    if isinstance(mem[consList][1], list):
+                        L.extend(mem[consList][1])
+                elif isinstance(mem[consList],int) or isinstance(mem[consList],float):
+                    L.extend(mem[consList])
         elif isList(consList)[0]:  # true 이면
             if isList(consList)[1] == 0:  # 직접 입력
                 L.extend(consList[1])
             elif isList(consList)[1] == 1:  # 저장된 리스트
                 L.extend(mem[consList][1])
-        return L
+        T.append(L)
+        return T
 
     elif x[0] == 'MEMBER':
         (_, word, memberList) = x
@@ -259,10 +280,13 @@ def eval(x, dic):
         return CAR_procedure(CDR_procedure(CDR_procedure ( caddrList, dic) , dic), dic)
 
     elif x[0] == 'REVERSE':
-        (_, reverselist) = x
-        if isList(reverselist)[0]:
-            reverselist[1].reverse()
-            return reverselist[1]
+        (_, reverseList) = x
+        L = ["'"]
+        exp = eval(reverseList, dic)
+        if isList(exp)[0]:
+            exp[1].reverse()
+            L.append(exp[1])
+            return L
     elif x[0]=='LENGTH':
         (_,lengthList)=x
         if isList(lengthList)[0]:
