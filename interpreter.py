@@ -206,6 +206,15 @@ def eval(x, dic):
             except ValueError:
                 return removeList[1]
     
+    elif x[0] == 'ASSOC':
+        (_, key, assocList) = x 
+        # assocList 예시 ["'", [["'", ['ONE', 1]], ["'", ['TWO', 2]], ["'", ['THREE', 3]]]]
+        key = eval(key, dic)
+        #assocTuple 예시 [["'", ['ONE', 1]]
+        for assocTuple in assocList[1]:
+            if key == assocTuple[1][0]:
+                return assocTuple[1][1]
+
     #     else:
     #         print("Error")
     
