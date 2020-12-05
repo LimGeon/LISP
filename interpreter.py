@@ -138,8 +138,17 @@ def eval(x, dic):
         elif alt is None:
             return False
         else:
-            exp = eval(alt, dic)
+            exp = eval(alt[0], dic)
         return eval(exp, dic)
+    
+    elif x[0] == 'COND':
+        (_, *ifexp) = x
+        for exp in ifexp:
+            test = exp[0]
+            conseq = exp[1]
+            if eval(test, dic):
+                return eval(conseq, dic)
+
     
     elif x[0] == 'PRINT':
         (_, val) = x
@@ -342,6 +351,13 @@ def eval(x, dic):
         (_, var1, var2)=x
         try:
             return eval(var1,dic)<eval(var2,dic)
+        except TypeError:
+            return False
+    
+    elif x[0] == '=':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic) == eval(var2,dic)
         except TypeError:
             return False
 
