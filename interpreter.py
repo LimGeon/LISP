@@ -148,6 +148,16 @@ def eval(x, dic):
         #print("들어가는 args: ", args)
         return list_procedure(*args)
     ########## Predicate 함수 ############
+
+        elif x[0] == 'REVERSE':
+        (_, reverseList) = x
+        L = ["'"]
+        exp = eval(reverseList, dic)
+        if isList(exp)[0]:
+            exp[1].reverse()
+            L.append(exp[1])
+            return L
+
     elif x[0] == 'ATOM':
         (_, var) = x
         return atom_procedure(var)
