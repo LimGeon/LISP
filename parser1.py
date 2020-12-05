@@ -11,10 +11,10 @@ def bracket_parser(data):
 def quote_parser(data):
     if data[0] == "'": #처음 오는게 '이면
         if data[1] == '(': #그 다음에 ( 오면 -> LIST
-            L=[]
-            
+            tmp = list_parser(data[2:])
+            return [tmp[0], data[tmp[1]+1:]]
         else: #심볼처리
-            atom_reg_ex = re.compile('[^ \t\n\r\f\v\)]+') #문자 or 숫자
+            atom_reg_ex = re.compile('[^\t\n\r\f\v\)]+') #문자 or 숫자
             atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
             if atom_match:
                 L = []
@@ -22,8 +22,27 @@ def quote_parser(data):
                 L.append(data[1:atom_match.end()+1].upper())
                 return [L,data[atom_match.end()+1:]]    
             
+def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
+    L = []
+    index = 0
+    while True:
+        if(data[index] == '('): #새로운 리스트
+            tmp = list_parser(data[index + 1:])
+            L.append(tmp[0]) #괄호 다음부터 list_parser로 새로 돌리기
+            index = index + tmp[1]
+        elif(data[index] == ')'): #리스트 끝
+            index = index + 1
+            return [L,index]
+        elif data[index] not in ('\t','\n','\r','\f','\v'): #공백이 아니면
+           list_reg_ex = re.compile('[^ \t\n\r\f\v\(\)]+')
+           list_match = list_reg_ex.match(data[index:])
+           if list_match:
+               L.append(data[index:list_match.end()+index].upper())
+               index = index + list_match.end()-1
+        index = index + 1       
 
-      
+    
+
 
 def space_parser(data): # 공백으로 시작하면f
     space_reg_ex = re.compile('\s+') #공백과 매치
@@ -110,8 +129,6 @@ def expression_parser(data):
             L.append(atom(token))
         rest = rest[1:]
         return [L, rest]
-    #elif token == "'":
-
     else:
         return [token, rest]
 
