@@ -53,9 +53,8 @@ def isList(vlist):
                 return [True,0] #직접 list 입력
     elif isinstance(vlist, str):
         if vlist in mem:
-            if isinstance(mem[vlist],list):
+            if mem[vlist][0] == "'" and isinstance(mem[vlist][1],list):
                 return [True,1] #mem에 저장되어있는 list
-
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -67,15 +66,14 @@ def lambda_procedure(parms, body, *args):
 def list_procedure(*args):
     T = ["'"]
     L = []
-    print("args 제대로 출력: ", args)
+    #print("args 제대로 출력: ", args)
     for k in args: #차례로 받아오기
-        print("k이다 임마!: ", k)
+        #print("k이다 임마!: ", k)
         L.append(eval(k,lisp_to_python_dic))
             
-        print("이건 L이다", L)
+        #print("이건 L이다", L)
     T.append(L)
     return T
-
 
 ##수정요망##
 def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
@@ -122,20 +120,12 @@ def eval(x, dic):
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
-        #print("x[1]: ", x[1])
-        print("쿼트로 들어옴")
-        (_, exp) = x
-        print("exp 쿼트 안에 있는거: ",exp)
+
         if not isinstance(x[1],list):
-            print("리스트 보내기")
-            #print("exph: ",exp)
+            (_, exp) = x
             return exp
-        elif isinstance(x[1],list):
-            if x[1][0] in dic:
-                tmp = eval(exp, dic)
-                print("tmp: ",tmp)
-                return tmp
-        return x
+        else:
+            return x
 
     elif x[0] == 'if':
         (_, test, conseq, alt) = x
@@ -153,9 +143,10 @@ def eval(x, dic):
             mem[var]=eval(exp,dic)
             return mem[var]
     elif x[0] == 'LIST':
-        print("리스트입니다!")
+
+        #print("리스트입니다!")
         (_, *args) = x
-        print("들어가는 args: ", args)
+        #print("들어가는 args: ", args)
         return list_procedure(*args)
     ########## Predicate 함수 ############
     elif x[0] == 'ATOM':
@@ -163,11 +154,11 @@ def eval(x, dic):
         return atom_procedure(var)
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
-        if isList(nthList)[0]: #true 이면
-            if isList(nthList)[1] == 0: # 직접 입력
-                return nthList[1][exp]
-            elif isList(nthList)[1] == 1: #저장된 리스트
-                return mem[nthList][exp]
+        if isList(eval(nthList, dic))[0]:  # true 이면
+            if isList(eval(nthList, dic))[1] == 0:  # 직접 입력
+                return eval(nthList, dic)[1][eval(exp, dic)]
+            elif isList(eval(nthList, dic))[1] == 1:  # 저장된 리스트
+                return mem[eval(nthList, dic)][eval(exp, dic)]
     elif x[0]=='CONS':
         (_, var, consList) = x
         L=[]
@@ -185,26 +176,8 @@ def eval(x, dic):
             if isList(consList)[1] == 0:  # 직접 입력
                 L.extend(consList[1])
             elif isList(consList)[1] == 1:  # 저장된 리스트
-                L.extend(mem[consList])
+                L.extend(mem[consList][1])
         return L
-    elif x[0] == 'APPEND':
-        (_, *args) = x
-        appendedList = [] #들어온 리스트들을 모두 담아줄 리스트
-        print("args: ", args)
-        for exp in args: #args 인자들의 리스트들을 한개씩 가져오기 example : ["'", ['A', 'D']]
-            print("exp: ", exp)
-            dk = eval(exp, dic)
-            print("dk이다: ",dk)
-            for val in exp[1]: #val example : ['A', 'D']
-                print("val: ", val)
-                #print("exp: ", exp)
-                val = eval(val, dic)
-                print("eval-val: ", val)
-                appendedList.append(val) # appendedList 의 결과 ex: ['A', 'D', 'F', 'D', 'G', 'D']
-                print("appendedList: ", appendedList)
-        resultList = ["'",]
-        resultList.append(appendedList) # ["'", ['A', 'D', 'F', 'D', 'G', 'D']]
-        return resultList
 
     # elif x[0] == 'MEMBER':
     #     (_, word, memberList) = x
@@ -216,24 +189,27 @@ def eval(x, dic):
 
     #     else:
     #         print("Error")
-        
-
+    
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
         (_, carList) = x
-        if isList(carList)[0]: #true 이면
-            if isList(carList)[1] == 0: # 직접 입력
-                return carList[1][0]
-            elif isList(carList)[1] == 1: #저장된 리스트
-                return mem[carList][0]
+        if isList(eval(carList,dic))[0]: #true 이면
+            if isList(eval(carList,dic))[1] == 0: # 직접 입력
+                return eval(carList,dic)[1][0]
+            elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
+                return mem[eval(carList,dic)][1][0]
     elif x[0] == 'CDR':
         (_, cdrList) = x
-        if isList(cdrList)[0]: #true 이면
-            if isList(cdrList)[1] == 0: # 직접 입력
-                return cdrList[1][1:]
-            elif isList(cdrList)[1] == 1: #저장된 리스트
-                return mem[cdrList][1:]
+        if isList(eval(cdrList,dic))[0]: #true 이면
+            if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
+                T = ["'"]
+                T.append(eval(cdrList,dic)[1][1:])
+                return T
+            elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
+                T = ["'"]
+                T.append(mem[eval(cdrList,dic)][1][1:])
+                return T
     elif x[0] == 'REVERSE':
         (_, reverselist) = x
         if isList(reverselist)[0]:
@@ -245,7 +221,7 @@ def eval(x, dic):
             if isList(lengthList)[1]==0:
                 return len(lengthList[1])
             elif isList(lengthList)[1]==1:
-                return len(mem[lengthList])
+                return len(mem[lengthList][1])
         else :
             return False
     elif x[0] == 'NUMBERP':
@@ -254,6 +230,20 @@ def eval(x, dic):
     elif x[0] == 'ZEROP':
         (_, var) = x
         return zerop_procedure(var)
+    elif x[0] == 'APPEND':
+        (_, *args) = x
+        appendedList = [] #들어온 리스트들을 모두 담아줄 리스트
+        for exp in args:
+            if isList(eval(exp,dic))[0]: #True면..
+                if isList(eval(exp,dic))[1] == 0: # 직접 입력
+                    for val in eval(exp,dic)[1]:
+                        appendedList.append(val)
+                elif isList(eval(exp,dic))[1]==1: #저장된 리스트
+                    for val in mem[eval(exp,dic)][1]:
+                        appendedList.append(val)
+        T = ["'"]
+        T.append(appendedList)
+        return T
     
     #(MINUSP X) ; X가 음수일 때만 참(true)을 반환함. X가 숫자가 아니면 ERROR 발생
     #elif x[0] == 'MINUSP':
@@ -269,7 +259,6 @@ def eval(x, dic):
     
     #(STRINGP X) ;  X가 STRING일 때만 참(true)을 반환함.
     #elif x[0] == 'STRINGP':
-
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
