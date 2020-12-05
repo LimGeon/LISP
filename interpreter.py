@@ -93,18 +93,23 @@ def list_procedure(*args):
     T.append(L)
     return T
 
-##수정요망##
-def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
-    if isinstance(var, str):  # 찐 string인지 심볼인지 #찐 string이면 mem에 있는지
-        if var in mem:
-            return True
-    elif isinstance(var,list):
-        if var[0]=="'":
-            return True
-    elif isinstance(var, int):
-        return True
-    elif isinstance(var, float):
-        return True
+# def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
+#     # if isinstance(var, str):  # 찐 string인지 심볼인지 #찐 string이면 mem에 있는지
+#     #     if var in mem:
+#     #         return True
+#     # elif isinstance(var,list):
+#     #     if var[0] == "'":
+#     #         if not isinstance(var[1],list):
+#     #             return True
+#     #         else:
+#     #             var = eval(var,lisp_to_python_dic)
+#     #             atom_procedure(var)
+#     # elif isinstance(var, int):
+#     #     return True
+#     # elif isinstance(var, float):
+#     #     return True
+#     # else:
+#     #     return False
 
 def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
@@ -137,7 +142,6 @@ def eval(x, dic):
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
-
         if not isinstance(x[1],list):
             (_, exp) = x
             return exp
@@ -177,8 +181,14 @@ def eval(x, dic):
             return L
 
     elif x[0] == 'ATOM':
-        (_, var) = x
-        return atom_procedure(var)
+        (_, exp) = x
+        exp = eval(exp, dic)
+        if isinstance(exp, list):
+            return False
+        elif isinstance(exp, int) or isinstance(exp, float):
+            return True
+        elif isinstance(exp,str):
+            return True
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
         if isList(eval(nthList, dic))[0]:  # true 이면
