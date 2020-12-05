@@ -38,7 +38,6 @@ lisp_to_python_dic = {
 lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
-
 mem = {}
 
 def CAR_procedure(carList, dic):
@@ -84,32 +83,12 @@ def lambda_procedure(parms, body, *args):
 def list_procedure(*args):
     T = ["'"]
     L = []
-    #print("args 제대로 출력: ", args)
     for k in args: #차례로 받아오기
-        #print("k이다 임마!: ", k)
         L.append(eval(k,lisp_to_python_dic))
-            
-        #print("이건 L이다", L)
+         
     T.append(L)
     return T
 
-# def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
-#     # if isinstance(var, str):  # 찐 string인지 심볼인지 #찐 string이면 mem에 있는지
-#     #     if var in mem:
-#     #         return True
-#     # elif isinstance(var,list):
-#     #     if var[0] == "'":
-#     #         if not isinstance(var[1],list):
-#     #             return True
-#     #         else:
-#     #             var = eval(var,lisp_to_python_dic)
-#     #             atom_procedure(var)
-#     # elif isinstance(var, int):
-#     #     return True
-#     # elif isinstance(var, float):
-#     #     return True
-#     # else:
-#     #     return False
 
 def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
@@ -196,6 +175,12 @@ def eval(x, dic):
                 return eval(nthList, dic)[1][eval(exp, dic)]
             elif isList(eval(nthList, dic))[1] == 1:  # 저장된 리스트
                 return mem[eval(nthList, dic)][eval(exp, dic)]
+    elif x[0] == 'STRINGP':
+        (_,var)=x
+        if isinstance(eval(x,dic),str):
+            return True
+        else:
+            return False
     elif x[0]=='CONS':
         (_, var, consList) = x
         T=["'"]
@@ -315,22 +300,6 @@ def eval(x, dic):
         T = ["'"]
         T.append(appendedList)
         return T
-     ########## Predicate 함수 ############
-
-    #(MINUSP X) ; X가 음수일 때만 참(true)을 반환함. X가 숫자가 아니면 ERROR 발생
-    #elif x[0] == 'MINUSP':
-
-    #(EQUAL X Y) ;  X와 Y가 같으면 참(true)을 반환함
-    #elif x[0] == 'EQUAL':
-
-    #(< X Y) ;  X < Y 이면 참(true)을 반환함.
-    #elif x[0] == '<':
-
-    #(>= X Y) ;  X >= Y 이면 참(true)을 반환함.
-    #elif x[0] == '>=':
-    
-    #(STRINGP X) ;  X가 STRING일 때만 참(true)을 반환함.
-    #elif x[0] == 'STRINGP':
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
