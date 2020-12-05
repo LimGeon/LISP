@@ -47,9 +47,8 @@ def isList(vlist):
                 return [True,0] #직접 list 입력
     elif isinstance(vlist, str):
         if vlist in mem:
-            if isinstance(mem[vlist],list):
+            if mem[vlist][0] == "'" and isinstance(mem[vlist][1],list):
                 return [True,1] #mem에 저장되어있는 list
-
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -73,7 +72,6 @@ def list_procedure(*args):
                 L.append(k[1])
     T.append(L)
     return T
-
 
 ##수정요망##
 def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
@@ -130,7 +128,6 @@ def eval(x, dic):
         dic[var] = eval(exp, dic)
     elif x[0] == 'SETQ':
         (_, var, exp) = x
-        #
         if isinstance(eval(exp,dic), list):
             L = ["'"]
             L.append(eval(exp,dic))
@@ -152,7 +149,7 @@ def eval(x, dic):
             if isList(nthList)[1] == 0: # 직접 입력
                 return nthList[1][exp]
             elif isList(nthList)[1] == 1: #저장된 리스트
-                return mem[nthList][exp]
+                return mem[nthList][1][exp]
     elif x[0]=='CONS':
         (_, var, consList) = x
         L=[]
@@ -170,25 +167,28 @@ def eval(x, dic):
             if isList(consList)[1] == 0:  # 직접 입력
                 L.extend(consList[1])
             elif isList(consList)[1] == 1:  # 저장된 리스트
-                L.extend(mem[consList])
+                L.extend(mem[consList][1])
         return L
-
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
         (_, carList) = x
-        if isList(carList)[0]: #true 이면
-            if isList(carList)[1] == 0: # 직접 입력
-                return carList[1][0]
-            elif isList(carList)[1] == 1: #저장된 리스트
-                return mem[carList][0]
+        if isList(eval(carList,dic))[0]: #true 이면
+            if isList(eval(carList,dic))[1] == 0: # 직접 입력
+                return eval(carList,dic)[1][0]
+            elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
+                return mem[eval(carList,dic)][1][0]
     elif x[0] == 'CDR':
         (_, cdrList) = x
-        if isList(cdrList)[0]: #true 이면
-            if isList(cdrList)[1] == 0: # 직접 입력
-                return cdrList[1][1:]
-            elif isList(cdrList)[1] == 1: #저장된 리스트
-                return mem[cdrList][1:]
+        if isList(eval(cdrList,dic))[0]: #true 이면
+            if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
+                T = ["'"]
+                T.append(eval(cdrList,dic)[1][1:])
+                return T
+            elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
+                T = ["'"]
+                T.append(mem[eval(cdrList,dic)][1][1:])
+                return T
     elif x[0] == 'REVERSE':
         (_, reverselist) = x
         if isList(reverselist)[0]:
@@ -200,7 +200,7 @@ def eval(x, dic):
             if isList(lengthList)[1]==0:
                 return len(lengthList[1])
             elif isList(lengthList)[1]==1:
-                return len(mem[lengthList])
+                return len(mem[lengthList][1])
         else :
             return False
     elif x[0] == 'NUMBERP':
