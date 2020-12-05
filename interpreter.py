@@ -38,6 +38,8 @@ lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
 
+mem = {}
+
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -81,8 +83,8 @@ def zerop_procedure(var):
 
 def eval(x, dic):
     if isinstance(x, str):
-        if x in dic:
-            return dic[x]
+        if x in mem:
+            return mem[x]
         else:
             return lisp_to_python_dic[x]
     elif not isinstance(x, list):
@@ -99,8 +101,8 @@ def eval(x, dic):
         dic[var] = eval(exp, dic)
     elif x[0] == 'SETQ':
         (_, var, exp) = x
-        dic[var]=eval(exp,dic)
-        return dic[var]
+        mem[var]=eval(exp,dic)
+        return mem[var]
     ########## Predicate 함수 ############
     elif x[0] == 'ATOM':
         (_, var) = x
