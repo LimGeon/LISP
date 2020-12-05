@@ -116,7 +116,6 @@ def eval(x, dic):
             return mem[x]
         elif x in lisp_to_python_dic:
             return lisp_to_python_dic[x]
-        return x
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
