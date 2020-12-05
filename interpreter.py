@@ -151,7 +151,6 @@ def eval(x, dic):
                 L.append(var[1])
             elif isList(var)[1] == 1:  # 저장된 리스트
                 L.append(mem[var])
-
         if isinstance(consList, str):
             if consList in mem:
                 L.extend(mem[consList])
@@ -165,23 +164,18 @@ def eval(x, dic):
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
         (_, carList) = x
-        if isinstance(carList, list):
-            if carList[0] == "'": #입력받을경우
+        if isList(carList)[0]: #true 이면
+            if isList(carList)[1] == 0: # 직접 입력
                 return carList[1][0]
-        elif isinstance(carList, str):
-            if carList in mem: # 변수일 경우
-                if isinstance(mem[carList],list): #리스트가 저장되어있으면
-                    return mem[carList][0]
-
+            elif isList(carList)[1] == 1: #저장된 리스트
+                return mem[carList][0]
     elif x[0] == 'CDR':
         (_, cdrList) = x
-        if isinstance(cdrList, list):
-            if cdrList[0] == "'":
+        if isList(cdrList)[0]: #true 이면
+            if isList(cdrList)[1] == 0: # 직접 입력
                 return cdrList[1][1:]
-        elif isinstance(cdrList,str):
-            if cdrList in mem:
-                if isinstance(mem[cdrList], list):
-                    return mem[cdrList][1:]
+            elif isList(cdrList)[1] == 1: #저장된 리스트
+                return mem[cdrList][1:]
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
         if isList(nthList)[0]: #true 이면
