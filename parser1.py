@@ -8,12 +8,12 @@ def bracket_parser(data):
     if data[0] == '(': 
         return [data[0], data[1:]]
 
-def atom_parser(data):  # ' 가 LIST때도 쓰여서 수정해야할듯 .. 
-    # ' 으로 시작하면-> 뒤에 오는거 공백까지 심볼로 처리 -> "'X" 이런식으로 묶여서 들어가는데.. 출력할때는 'X 빼고 대문자로 해야하는데 어카지
+def quote_parser(data):
     if data[0] == "'": #처음 오는게 '이면
         if data[1] == '(': #그 다음에 ( 오면 -> LIST
-            return data[1]
-        else:
+            L=[]
+            
+        else: #심볼처리
             atom_reg_ex = re.compile('[^ \t\n\r\f\v\)]+') #문자 or 숫자
             atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
             if atom_match:
@@ -25,7 +25,7 @@ def atom_parser(data):  # ' 가 LIST때도 쓰여서 수정해야할듯 ..
 
       
 
-def space_parser(data): # 공백으로 시작하면
+def space_parser(data): # 공백으로 시작하면f
     space_reg_ex = re.compile('\s+') #공백과 매치
     space_match = space_reg_ex.match(data)
     if space_match:
@@ -118,7 +118,7 @@ def expression_parser(data):
 def any_one_parser_factory(*args):
     return lambda data: (reduce(lambda f, g: f if f(data)  else g, args)(data))
 
-value_parser = any_one_parser_factory(space_parser, bracket_parser, atom_parser, keyword_parser,
+value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, keyword_parser,
                                       number_parser, identifier_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
                                     binary_parser, arithemetic_parser, unary_parser)
