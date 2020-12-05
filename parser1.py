@@ -51,9 +51,16 @@ def space_parser(data): # 공백으로 시작하면f
     space_match = space_reg_ex.match(data)
     if space_match:
         return [data[:space_match.end()], data[space_match.end():]]
+    
 
 def number_parser(data): #숫자로 시작하면
     number_reg_ex = re.compile('\d+')
+    if data[0] == '-' and data[1].isdigit():
+        data = data[1:]
+        number_match = number_reg_ex.match(data)
+        if number_match:
+            return['-'+data[:number_match.end()], data[number_match.end():]]
+
     number_match = number_reg_ex.match(data)
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
@@ -120,6 +127,10 @@ def expression_parser(data):
     res = value_parser(data)
     rest = res.pop(1)
     token = res.pop(0)
+    print("data:", data)
+    print("rest:", rest)
+    print("token:", token)
+    print()
     if token == '(':
         L = []
         while rest[0] != ')':
@@ -138,8 +149,8 @@ def expression_parser(data):
 def any_one_parser_factory(*args):
     return lambda data: (reduce(lambda f, g: f if f(data)  else g, args)(data))
 
-value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, keyword_parser,
-                                      number_parser, identifier_parser)
+value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, 
+                                    number_parser, keyword_parser, identifier_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
                                     binary_parser, arithemetic_parser, unary_parser)
 
@@ -147,7 +158,6 @@ def main():
     # file_name = input()
     # with open(file_name, 'r') as f:
     #     data = f.read().strip()
-    
     while(True):
         userInput = input("> ")
         print(expression_parser(userInput))
