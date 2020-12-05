@@ -1,5 +1,5 @@
 #interpreter
-
+#xxeol test
 import math
 import operator as op
 from functools import reduce
@@ -18,7 +18,6 @@ lisp_to_python_dic = {
     'car':     lambda x: x[0],
     'cdr':     lambda x: x[1:],
     'cons':    lambda x, y: [x] + y,
-    'reverse': lambda x: x[::-1],
     'eq?':     op.is_,
     'equal?':  op.eq,
     'length':  len,
@@ -41,6 +40,16 @@ dic_new2 = {}
 
 mem = {}
 
+def isList(vlist):
+    if isinstance(vlist, list):
+        if vlist[0] == "'":
+            if isinstance(vlist[1], list):
+                return [True,0] #직접 list 입력
+    elif isinstance(vlist, str):
+        if vlist in mem:
+            if isinstance(mem[vlist],list):
+                return [True,1] #mem에 저장되어있는 list
+
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -48,7 +57,6 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(lisp_to_python_dic)
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
-    
 
 def list_procedure(*args):
     L = []
@@ -130,7 +138,37 @@ def eval(x, dic):
 
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
-    
+    elif x[0] == 'CAR':
+        (_, carList) = x
+        if isinstance(carList, list):
+            if carList[0] == "'": #입력받을경우
+                return carList[1][0]
+        elif isinstance(carList, str):
+            if carList in mem: # 변수일 경우
+                if isinstance(mem[carList],list): #리스트가 저장되어있으면
+                    return mem[carList][0]
+
+    elif x[0] == 'CDR':
+        (_, cdrList) = x
+        if isinstance(cdrList, list):
+            if cdrList[0] == "'":
+                return cdrList[1][1:]
+        elif isinstance(cdrList,str):
+            if cdrList in mem:
+                if isinstance(mem[cdrList], list):
+                    return mem[cdrList][1:]
+    elif x[0] == 'NTH':
+        (_, exp, nthList) = x
+        if isList(nthList)[0]: #true 이면
+            if isList(nthList)[1] == 0: # 직접 입력
+                return nthList[1][exp]
+            elif isList(nthList)[1] == 1: #저장된 리스트
+                return mem[nthList][exp]
+    elif x[0]=='REVERSE':
+        (_,reverselist)=x
+        if isList(reverselist)==True:
+            reverselist[1].reverse()
+            return reverselist[1]
     elif x[0] == 'NUMBERP':
         (_, var) = x
         return numberp_procedure(var)
