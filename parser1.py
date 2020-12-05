@@ -2,7 +2,7 @@
 ## Parser
 # hyo test
 from functools import reduce
-import re
+import re 
 
 def bracket_parser(data):
     if data[0] == '(': 
@@ -57,6 +57,7 @@ def number_parser(data): #숫자로 시작하면
     number_match = number_reg_ex.match(data)
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
+
 
 
 def identifier_parser(data):

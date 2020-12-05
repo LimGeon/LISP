@@ -32,6 +32,7 @@ lisp_to_python_dic = {
     'procedure?': callable,
     'round':   round,
     'symbol?': lambda x: isinstance(x, str),
+    'LIST' : 3,
     }
 
 lisp_to_python_dic.update(vars(math))
@@ -39,6 +40,11 @@ lisp_to_python_dic.update(vars(math))
 dic_new2 = {}
 
 mem = {}
+
+def addQuote(vlist):
+    reList = ["'",]
+    reList.append(vlist)
+    return reList
 
 def isList(vlist):
     if isinstance(vlist, list):
@@ -114,11 +120,13 @@ def eval(x, dic):
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
+
         if not isinstance(x[1],list):
             (_, exp) = x
             return exp
         else:
             return x
+
     elif x[0] == 'if':
         (_, test, conseq, alt) = x
         exp = eval(conseq,dic) if eval(test, dic) else eval(alt,dic)
@@ -135,6 +143,7 @@ def eval(x, dic):
             mem[var]=eval(exp,dic)
             return mem[var]
     elif x[0] == 'LIST':
+
         #print("리스트입니다!")
         (_, *args) = x
         #print("들어가는 args: ", args)
@@ -169,6 +178,18 @@ def eval(x, dic):
             elif isList(consList)[1] == 1:  # 저장된 리스트
                 L.extend(mem[consList][1])
         return L
+
+    # elif x[0] == 'MEMBER':
+    #     (_, word, memberList) = x
+    #     if memberList in mem:
+    #         memberList = mem[memberList][1]
+    #         startIndex = memberList.index(word)
+    #         for i in range(startIndex)
+            
+
+    #     else:
+    #         print("Error")
+    
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
@@ -250,8 +271,8 @@ def eval(x, dic):
             return args
 
 
-def main():  
-     while(True):
+def main():
+    while(True):
         userInput = input("> ")
         print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
 
