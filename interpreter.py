@@ -113,6 +113,7 @@ def numberp_procedure(var):
         if var in mem:
             if isinstance(mem[var],int) or isinstance(mem[var],float):
                 return True
+    return False
 
 def zerop_procedure(var):
     if isinstance(var,int):
@@ -243,8 +244,7 @@ def eval(x, dic):
     #     else:
     #         print("Error")
     
-    #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
-    #elif x[0] == 'NULL':
+    
     elif x[0] == 'CAR':
         (_, carList) = x
         return CAR_procedure(carList, dic)
@@ -307,6 +307,28 @@ def eval(x, dic):
     
     #(STRINGP X) ;  X가 STRING일 때만 참(true)을 반환함.
     #elif x[0] == 'STRINGP':
+
+    elif x[0] == 'NULL':
+        (_, exp) = x
+        if exp=='':
+            return True
+        L=eval(exp,dic)
+        if isList(L)[0]:
+            return L[1]==[]
+        else:
+            return False
+    elif x[0] == 'MINUSP':
+        (_, exp) = x
+        exp = eval(exp, dic)
+        if numberp_procedure(exp) == True:
+            if exp < 0:
+                return True
+            else:
+                return False
+        else:
+            print("Error")
+        
+            
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
