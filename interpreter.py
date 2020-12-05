@@ -149,6 +149,7 @@ def eval(x, dic):
         (_, test, conseq, alt) = x
         exp = eval(conseq,dic) if eval(test, dic) else eval(alt,dic)
         return eval(exp, dic)
+        
     elif x[0] == 'define':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
