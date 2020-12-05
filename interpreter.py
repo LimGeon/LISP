@@ -41,6 +41,24 @@ dic_new2 = {}
 
 mem = {}
 
+def CAR_procedure(carList, dic):
+    if isList(eval(carList,dic))[0]: #true 이면
+        if isList(eval(carList,dic))[1] == 0: # 직접 입력
+            return eval(carList,dic)[1][0]
+        elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
+            return mem[eval(carList,dic)][1][0]
+
+def CDR_procedure(cdrList, dic):
+    if isList(eval(cdrList,dic))[0]: #true 이면
+        if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
+            T = ["'"]
+            T.append(eval(cdrList,dic)[1][1:])
+            return T
+        elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
+            T = ["'"]
+            T.append(mem[eval(cdrList,dic)][1][1:])
+            return T
+
 def addQuote(vlist):
     reList = ["'",]
     reList.append(vlist)
@@ -147,7 +165,7 @@ def eval(x, dic):
         (_, *args) = x
         #print("들어가는 args: ", args)
         return list_procedure(*args)
-    ########## Predicate 함수 ############
+   
 
     elif x[0] == 'REVERSE':
         (_, reverseList) = x
@@ -229,22 +247,16 @@ def eval(x, dic):
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
         (_, carList) = x
-        if isList(eval(carList,dic))[0]: #true 이면
-            if isList(eval(carList,dic))[1] == 0: # 직접 입력
-                return eval(carList,dic)[1][0]
-            elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
-                return mem[eval(carList,dic)][1][0]
+        return CAR_procedure(carList, dic)
+    
     elif x[0] == 'CDR':
         (_, cdrList) = x
-        if isList(eval(cdrList,dic))[0]: #true 이면
-            if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
-                T = ["'"]
-                T.append(eval(cdrList,dic)[1][1:])
-                return T
-            elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
-                T = ["'"]
-                T.append(mem[eval(cdrList,dic)][1][1:])
-                return T
+        return CDR_procedure(cdrList, dic)
+
+    elif x[0] == 'CADDR':
+        (_, caddrList) = x
+        return CAR_procedure(CDR_procedure(CDR_procedure ( caddrList, dic) , dic), dic)
+
     elif x[0] == 'REVERSE':
         (_, reverselist) = x
         if isList(reverselist)[0]:
@@ -279,7 +291,8 @@ def eval(x, dic):
         T = ["'"]
         T.append(appendedList)
         return T
-    
+     ########## Predicate 함수 ############
+
     #(MINUSP X) ; X가 음수일 때만 참(true)을 반환함. X가 숫자가 아니면 ERROR 발생
     #elif x[0] == 'MINUSP':
 
