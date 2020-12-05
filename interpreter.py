@@ -76,17 +76,17 @@ def list_procedure(*args):
 
 
 ##수정요망##
-def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
-    if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 mem에 있는지
+def atom_procedure(var):  # True False를 T NIL로 바꿔주기!!
+    if isinstance(var, str):  # 찐 string인지 심볼인지 #찐 string이면 mem에 있는지
         if var in mem:
-            if not isinstance(var[mem], list):
-                return True
+            return True
+    elif isinstance(var,list):
+        if var[0]=="'":
+            return True
     elif isinstance(var, int):
         return True
     elif isinstance(var, float):
         return True
-    #elif isinstance(var, list):
-        
 
 def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
@@ -131,6 +131,10 @@ def eval(x, dic):
     elif x[0] == 'SETQ':
         (_, var, exp) = x
         mem[var]=eval(exp,dic)
+        if isinstance(mem[var], list):
+            L = ["'"]
+            L.append(mem[var])
+            return L
         return mem[var]
     elif x[0] == 'LIST':
         (_, *args) = x
@@ -139,21 +143,23 @@ def eval(x, dic):
     elif x[0] == 'ATOM':
         (_, var) = x
         return atom_procedure(var)
+    elif x[0] == 'NTH':
+        (_, exp, nthList) = x
+        if isList(nthList)[0]: #true 이면
+            if isList(nthList)[1] == 0: # 직접 입력
+                return nthList[1][exp]
+            elif isList(nthList)[1] == 1: #저장된 리스트
+                return mem[nthList][exp]
     elif x[0]=='CONS':
         (_, var, consList) = x
-        print(var)
-        print(consList)
         L=[]
         if isinstance(var,int) or isinstance(var,float):
             L.append(var)
         elif isinstance(var, str):
             if var in mem:
                 L.append(mem[var])
-        elif isList(var)[0]:  # true 이면
-            if isList(var)[1] == 0:  # 직접 입력
-                L.append(var[1])
-            elif isList(var)[1] == 1:  # 저장된 리스트
-                L.append(mem[var])
+        elif atom_procedure(var):
+            L.extend(var[1])
         if isinstance(consList, str):
             if consList in mem:
                 L.extend(mem[consList])
@@ -163,6 +169,7 @@ def eval(x, dic):
             elif isList(consList)[1] == 1:  # 저장된 리스트
                 L.extend(mem[consList])
         return L
+
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
@@ -179,18 +186,20 @@ def eval(x, dic):
                 return cdrList[1][1:]
             elif isList(cdrList)[1] == 1: #저장된 리스트
                 return mem[cdrList][1:]
-    elif x[0] == 'NTH':
-        (_, exp, nthList) = x
-        if isList(nthList)[0]: #true 이면
-            if isList(nthList)[1] == 0: # 직접 입력
-                return nthList[1][exp]
-            elif isList(nthList)[1] == 1: #저장된 리스트
-                return mem[nthList][exp]
-    elif x[0]=='REVERSE':
-        (_,reverselist)=x
-        if isList(reverselist)==True:
+    elif x[0] == 'REVERSE':
+        (_, reverselist) = x
+        if isList(reverselist)[0]:
             reverselist[1].reverse()
             return reverselist[1]
+    elif x[0]=='LENGTH':
+        (_,lengthList)=x
+        if isList(lengthList)[0]:
+            if isList(lengthList)[1]==0:
+                return len(lengthList[1])
+            elif isList(lengthList)[1]==1:
+                return len(mem[lengthList])
+        else :
+            return False
     elif x[0] == 'NUMBERP':
         (_, var) = x
         return numberp_procedure(var)
