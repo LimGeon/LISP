@@ -30,6 +30,7 @@ def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
     while True:
         if(data[index] == '('): #새로운 리스트
             tmp = list_parser(data[index + 1:])
+            L.append("'")
             L.append(tmp[0]) #괄호 다음부터 list_parser로 새로 돌리기
             index = index + tmp[1]
         elif(data[index] == ')'): #리스트 끝
