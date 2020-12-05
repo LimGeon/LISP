@@ -44,8 +44,6 @@ def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
                index = index + list_match.end()-1
         index = index + 1       
 
-    
-
 
 def space_parser(data): # 공백으로 시작하면f
     space_reg_ex = re.compile('\s+') #공백과 매치
