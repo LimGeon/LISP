@@ -375,7 +375,7 @@ def eval(x, dic):
 
     elif x[0] == 'STRINGP':
         (_,var)=x
-        if isinstance(eval(x,dic),str):
+        if isinstance(eval(var,dic),str):
             return True
         else:
             return False
