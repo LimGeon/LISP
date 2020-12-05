@@ -4,6 +4,7 @@ import math
 import operator as op
 from functools import reduce
 from parser1 import expression_parser
+import sys
 
 lisp_to_python_dic = {
     '+':lambda *x: reduce(op.add, *x), '-':lambda *x: reduce(op.sub, *x),
@@ -40,6 +41,12 @@ lisp_to_python_dic.update(vars(math))
 dic_new2 = {}
 
 mem = {}
+
+def isList(vlist):
+    if vlist[0] == "'":
+        return True
+    else:
+        False
 
 def lambda_procedure(parms, body, *args):
     dic_new = {}
@@ -104,6 +111,20 @@ def eval(x, dic):
         (_, var, exp) = x
         mem[var]=eval(exp,dic)
         return mem[var]
+    elif x[0] == 'CAR':
+        (_, carList) = x
+        if isList(carList) == True:
+            return carList[1][0]
+    elif x[0] == 'CDR':
+        (_, cdrList) = x
+        if isList(cdrList) == True:
+            cdrList = cdrList[1][1:]
+            return cdrList
+    elif x[0]=='REVERSE':
+        (_,reverselist)=x
+        if isList(reverselist)==True:
+            reverselist[1].reverse()
+            return reverselist[1]       
     ########## Predicate 함수 ############
     elif x[0] == 'ATOM':
         (_, var) = x
