@@ -86,10 +86,7 @@ def list_procedure(*args):
     L = []
     #print("args 제대로 출력: ", args)
     for k in args: #차례로 받아오기
-        #print("k이다 임마!: ", k)
         L.append(eval(k,lisp_to_python_dic))
-            
-        #print("이건 L이다", L)
     T.append(L)
     return T
 
@@ -233,21 +230,24 @@ def eval(x, dic):
 
     elif x[0] == 'MEMBER':
         (_, word, memberList) = x
+        T = ["'"]
         if memberList in mem:
             memberList = mem[memberList][1]
             startIndex = memberList.index(word[1])
-            return memberList[startIndex:]
+            T.append(memberList[startIndex:])
+            return T
     
     elif x[0]=='REMOVE':
         (_, var, exp)=x
+        L = ["'"]
         word=eval(var,dic)
         removeList=eval(exp,dic)
-        print(removeList[1])
         while(True):
             try:
                 removeList[1].remove(word)
             except ValueError:
-                return removeList[1]
+                L.append(removeList[1])
+                return L
     
     elif x[0] == 'ASSOC':
         (_, key, assocList) = x 
@@ -388,12 +388,44 @@ def eval(x, dic):
             args=[eval(exp,dic) for exp in x[0:]]
             return args
 
-    
+def printlist(l):
+    if l[0] == "'" and isinstance(l[1],list):
+        tmp = "("
+        for i in l[1]:
+            if not isinstance(i,list): #리스트가 아닌 경우
+                if isinstance(i, str):
+                    if not i == l[1][0] :
+                        tmp = tmp + " " + i
+                    else:
+                        tmp = tmp + i
+                else:
+                    if not i == l[1][0]:
+                        tmp = tmp + " " + str(i)
+                    else:
+                        tmp = tmp + str(i)
+            else: #리스트인 경우
+                if not i == l[1][0] : 
+                    tmp = tmp +" "+ printlist(i)
+                else :
+                    tmp = tmp +printlist(i)
+
+                
+        
+        tmp = tmp + ")"
+        return tmp
 
 def main():
     while(True):
         userInput = input("> ")
-        print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
+        # print("type : " , type(eval(expression_parser(userInput).pop(0), lisp_to_python_dic)))
+        # print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
+
+
+        rv = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
+        if isinstance(rv, list): # 리스트면
+            print(printlist(rv))
+        else: # 리스트가 아니면
+            print(rv)
 
 if __name__ == "__main__":
     main()

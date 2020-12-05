@@ -4,23 +4,23 @@
 from functools import reduce
 import re 
 
-def bracket_parser(data):
+def bracket_parser(data): # ( 가 처음오면 잘라주기
     if data[0] == '(': 
-        return [data[0], data[1:]]
+        return [data[0], data[1:].upper()]
 
-def quote_parser(data):
-    if data[0] == "'": #처음 오는게 '이면
+def quote_parser(data): # ' 가 처음 오면 -> (유무에 따라 심볼 or LIST
+    if data[0] == "'": 
         if data[1] == '(': #그 다음에 ( 오면 -> LIST
-            tmp = ["'"]
-            tmp2 = list_parser(data[2:])
-            tmp.append(tmp2[0])
+            tmp = ["'"] # ' 추가해서 LIST 시작을 알림
+            tmp2 = list_parser(data[2:]) # 괄호 다음 문자부터 list_parser로 넘겨주기
+            tmp.append(tmp2[0]) #tmp2는 [list, index] 형식의 list / tmp에 tmp2[0] append
             return [tmp, data[tmp2[1]+2:]]
         else: #심볼처리
             atom_reg_ex = re.compile('\\w+') #문자 or 숫자
             atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
             if atom_match:
                 L = []
-                L.append(data[0])
+                L.append(data[0]) # ' 추가
                 L.append(data[1:atom_match.end()+1].upper())
                 return [L,data[atom_match.end()+1:]]    
             
