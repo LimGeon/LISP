@@ -66,7 +66,7 @@ def identifier_parser(data):
     if identifier_match:
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
-keywords_li = ['define', 'lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
+keywords_li = ['define', 'lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if', '=',
                'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote','reverse']
 
 def keyword_parser(data):
@@ -89,7 +89,7 @@ def arithemetic_parser(data):
         if data.startswith(item):
             return [data[:len(item)], data[len(item):]]
 
-binary_operations = ['<=', '>=', '<', '>', 'pow', 'append']
+binary_operations = ['<=', '>=', '<', '>', '=', 'pow', 'append']
 
 def binary_parser(data):
     for item in binary_operations:

@@ -89,7 +89,10 @@ def list_procedure(*args):
     T.append(L)
     return T
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7f4a85c87c47aee16b5f7cd47c7565b1ba91f7ab
 def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
         return True
@@ -97,6 +100,7 @@ def numberp_procedure(var):
         if var in mem:
             if isinstance(mem[var],int) or isinstance(mem[var],float):
                 return True
+    return False
 
 def zerop_procedure(var):
     if isinstance(var,int):
@@ -127,10 +131,30 @@ def eval(x, dic):
         else:
             return x
 
-    elif x[0] == 'if':
-        (_, test, conseq, alt) = x
-        exp = eval(conseq,dic) if eval(test, dic) else eval(alt,dic)
+    elif x[0] == 'IF':
+        (_, test, conseq, *alt) = x #alt 2개 이상이면 에러처리
+        if eval(test, dic):
+            exp = eval(conseq, dic)
+        elif alt is None:
+            return False
+        else:
+            exp = eval(alt[0], dic)
         return eval(exp, dic)
+    
+    elif x[0] == 'COND':
+        (_, *ifexp) = x
+        for exp in ifexp:
+            test = exp[0]
+            conseq = exp[1]
+            if eval(test, dic):
+                return eval(conseq, dic)
+
+    
+    elif x[0] == 'PRINT':
+        (_, val) = x
+        val = eval(val, dic)
+        print(val)
+
     elif x[0] == 'define':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
@@ -168,6 +192,7 @@ def eval(x, dic):
             return True
         elif isinstance(exp,str):
             return True
+
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
         if isList(eval(nthList, dic))[0]:  # true 이면
@@ -249,8 +274,7 @@ def eval(x, dic):
     #     else:
     #         print("Error")
     
-    #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
-    #elif x[0] == 'NULL':
+    
     elif x[0] == 'CAR':
         (_, carList) = x
         return CAR_procedure(carList, dic)
@@ -300,9 +324,71 @@ def eval(x, dic):
         T = ["'"]
         T.append(appendedList)
         return T
+<<<<<<< HEAD
+=======
+     ########## Predicate 함수 ############
+
+    elif x[0] == 'NULL':
+        (_, exp) = x
+        if exp=='':
+            return True
+        L=eval(exp,dic)
+        if isList(L)[0]:
+            return L[1]==[]
+        else:
+            return False
+    elif x[0] == 'MINUSP':
+        (_, exp) = x
+        exp = eval(exp, dic)
+        if numberp_procedure(exp) == True:
+            if exp < 0:
+                return True
+            else:
+                return False
+        else:
+            print("Error")
+    
+    elif x[0] == 'EQUAL':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic)==eval(var2,dic)
+        except TypeError:
+            return False
+
+    elif x[0] == '<':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic)<eval(var2,dic)
+        except TypeError:
+            return False
+    
+    elif x[0] == '=':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic) == eval(var2,dic)
+        except TypeError:
+            return False
+
+    elif x[0] == '>=':
+        (_, var1, var2)=x
+        try:
+            return eval(var1,dic)>=eval(var2,dic)
+        except TypeError:
+            return False
+        
+            
+>>>>>>> 7f4a85c87c47aee16b5f7cd47c7565b1ba91f7ab
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
+
+    elif x[0] == 'STRINGP':
+        (_,var)=x
+        if isinstance(eval(x,dic),str):
+            return True
+        else:
+            return False
+
     else:
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
@@ -311,6 +397,7 @@ def eval(x, dic):
             args=[eval(exp,dic) for exp in x[0:]]
             return args
 
+    
 
 def main():
     while(True):
