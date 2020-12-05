@@ -194,8 +194,18 @@ def eval(x, dic):
             memberList = mem[memberList][1]
             startIndex = memberList.index(word[1])
             return memberList[startIndex:]
-            
-
+    
+    elif x[0]=='REMOVE':
+        (_, var, exp)=x
+        word=eval(var,dic)
+        removeList=eval(exp,dic)
+        print(removeList[1])
+        while(True):
+            try:
+                removeList[1].remove(word)
+            except ValueError:
+                return removeList[1]
+    
     #     else:
     #         print("Error")
     
