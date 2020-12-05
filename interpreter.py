@@ -46,7 +46,6 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
 
-
 def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
     if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 lisp_to_python_dic에 있는지
         if var in lisp_to_python_dic:
@@ -138,7 +137,10 @@ def eval(x, dic):
     else:
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
-        return proc(args)
+        try: return proc(args)
+        except TypeError:
+            args=[eval(exp,dic) for exp in x[0:]]
+            return args
 
 
 def main():  
