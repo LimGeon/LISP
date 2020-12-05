@@ -18,6 +18,7 @@ lisp_to_python_dic = {
     'car':     lambda x: x[0],
     'cdr':     lambda x: x[1:],
     'cons':    lambda x, y: [x] + y,
+    'reverse': lambda x: x[::-1],
     'eq?':     op.is_,
     'equal?':  op.eq,
     'length':  len,
@@ -38,6 +39,8 @@ lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {}
 
+mem = {}
+
 def lambda_procedure(parms, body, *args):
     dic_new = {}
     for k, v in list(zip(parms, list(*args))):
@@ -46,10 +49,9 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
 
-
 def atom_procedure(var): #True False를 T NIL로 바꿔주기!!
-    if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 lisp_to_python_dic에 있는지
-        if var in lisp_to_python_dic:
+    if isinstance(var, str):#찐 string인지 심볼인지 #찐 string이면 mem에 있는지
+        if var in mem:
             return True
         elif var[0] == "'":
             return True
@@ -62,8 +64,8 @@ def numberp_procedure(var):
     if isinstance(var,int) or isinstance(var,float):
         return True
     elif isinstance(var,str):
-        if var in lisp_to_python_dic:
-            if isinstance(lisp_to_python_dic[var],int) or isinstance(lisp_to_python_dic[var],float):
+        if var in mem:
+            if isinstance(mem[var],int) or isinstance(mem[var],float):
                 return True
 
 def zerop_procedure(var):
@@ -74,21 +76,21 @@ def zerop_procedure(var):
         if var == 0:
             return True
     elif isinstance(var,str):
-        if var in lisp_to_python_dic:
-            if lisp_to_python_dic[var] == 0:
+        if var in mem:
+            if mem[var] == 0:
                 return True
     else: #숫자가 아닐 때.. 사실 나중에 Error 처리 해줘야하는데 일단 False로
         return False        
 
 def eval(x, dic):
     if isinstance(x, str):
-        if x in dic:
-            return dic[x]
+        if x in mem:
+            return mem[x]
         else:
             return lisp_to_python_dic[x]
     elif not isinstance(x, list):
         return x
-    elif x[0] == 'quote':
+    elif x[0] == "'":
         (_, exp) = x
         return exp
     elif x[0] == 'if':
@@ -100,9 +102,8 @@ def eval(x, dic):
         dic[var] = eval(exp, dic)
     elif x[0] == 'SETQ':
         (_, var, exp) = x
-        dic[var]=eval(exp,dic)
-        return dic[var]
-    
+        mem[var]=eval(exp,dic)
+        return mem[var]
     ########## Predicate 함수 ############
     elif x[0] == 'ATOM':
         (_, var) = x
@@ -139,7 +140,10 @@ def eval(x, dic):
     else:
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
-        return proc(args)
+        try: return proc(args)
+        except TypeError:
+            args=[eval(exp,dic) for exp in x[0:]]
+            return args
 
 
 def main():  

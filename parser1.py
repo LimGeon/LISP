@@ -12,12 +12,15 @@ def atom_parser(data):  # ' 가 LIST때도 쓰여서 수정해야할듯 ..
     # ' 으로 시작하면-> 뒤에 오는거 공백까지 심볼로 처리 -> "'X" 이런식으로 묶여서 들어가는데.. 출력할때는 'X 빼고 대문자로 해야하는데 어카지
     if data[0] == "'": #처음 오는게 '이면
         if data[1] == '(': #그 다음에 ( 오면 -> LIST
-            
+            return data[1]
         else:
             atom_reg_ex = re.compile('[^ \t\n\r\f\v\)]+') #문자 or 숫자
             atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
             if atom_match:
-                return[data[:atom_match.end()+1].upper(), data[atom_match.end()+1:].upper()]
+                L = []
+                L.append(data[0])
+                L.append(data[1:atom_match.end()+1].upper())
+                return [L,data[atom_match.end()+1:]]    
             
 
       
@@ -42,7 +45,7 @@ def identifier_parser(data):
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
 keywords_li = ['define', 'lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
-               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote']
+               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote','reverse']
 
 def keyword_parser(data):
     for item in keywords_li:
@@ -107,6 +110,8 @@ def expression_parser(data):
             L.append(atom(token))
         rest = rest[1:]
         return [L, rest]
+    #elif token == "'":
+
     else:
         return [token, rest]
 
