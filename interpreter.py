@@ -427,31 +427,5 @@ def main():
         else: # 리스트가 아니면
             print(rv)
 
-
-    # while(True):
-        
-        # userInput = input("> ")
-        # # if isinstance(eval(expression_parser(userInput).pop(0), lisp_to_python_dic), list):
-        # #     L = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
-        # #     if L[0] == "'" and isinstance(L[1], list):
-        # #         tmp = "("
-        # #         for i in L[1]:
-        # #             if isinstance(i,str):
-        # #                 if not i == L[1][0]:
-        # #                     tmp = tmp +" "+  i
-        # #                 else:
-        # #                     tmp = tmp + i
-        # #             elif isinstance(i, int):
-        # #                 if not i == L[1][0]:
-        # #                     tmp = tmp + " " + str(i)
-        # #                 else:
-        # #                     tmp = tmp + str(i)
-        # #         tmp = tmp + ")"
-        # #         print(tmp)
-            
-        # # else:
-        #     print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
-        
-
 if __name__ == "__main__":
     main()
