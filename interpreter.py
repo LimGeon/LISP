@@ -102,6 +102,7 @@ def eval(x, dic):
         (_, var, exp) = x
         dic[var]=eval(exp,dic)
         return dic[var]
+    
     ########## Predicate 함수 ############
     elif x[0] == 'ATOM':
         (_, var) = x

@@ -1,6 +1,6 @@
 ### Lisp Intrepreter in Python
 ## Parser
-
+# hyo test
 from functools import reduce
 import re
 
@@ -11,11 +11,16 @@ def bracket_parser(data):
 def atom_parser(data):  # ' 가 LIST때도 쓰여서 수정해야할듯 .. 
     # ' 으로 시작하면-> 뒤에 오는거 공백까지 심볼로 처리 -> "'X" 이런식으로 묶여서 들어가는데.. 출력할때는 'X 빼고 대문자로 해야하는데 어카지
     if data[0] == "'": #처음 오는게 '이면
-       # if data[1] == '(': #그 다음에 ( 오면 -> LIST
-        atom_reg_ex = re.compile('\w+') #문자 or 숫자
-        atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
-        if atom_match:
-            return[data[:atom_match.end()+1], data[atom_match.end()+1:]]
+        if data[1] == '(': #그 다음에 ( 오면 -> LIST
+            
+        else:
+            atom_reg_ex = re.compile('[^ \t\n\r\f\v\)]+') #문자 or 숫자
+            atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
+            if atom_match:
+                return[data[:atom_match.end()+1].upper(), data[atom_match.end()+1:].upper()]
+            
+
+      
 
 def space_parser(data): # 공백으로 시작하면
     space_reg_ex = re.compile('\s+') #공백과 매치
@@ -124,4 +129,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
