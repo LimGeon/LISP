@@ -2,7 +2,7 @@
 ## Parser
 # hyo test
 from functools import reduce
-import re
+import re 
 
 def bracket_parser(data):
     if data[0] == '(': 
@@ -29,9 +29,10 @@ def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
     index = 0
     while True:
         if(data[index] == '('): #새로운 리스트
-            tmp = list_parser(data[index + 1:])
-            L.append("'")
-            L.append(tmp[0]) #괄호 다음부터 list_parser로 새로 돌리기
+            tmp = list_parser(data[index + 1:]) #괄호 다음부터 list_parser로 새로 돌리기
+            T = ["'"]
+            T.append(tmp[0])
+            L.append(T)
             index = index + tmp[1]
         elif(data[index] == ')'): #리스트 끝
             index = index + 1
@@ -58,13 +59,14 @@ def number_parser(data): #숫자로 시작하면
         return[data[:number_match.end()], data[number_match.end():]]
 
 
+
 def identifier_parser(data):
     identifier_reg_ex = re.compile('\w+')
     identifier_match = identifier_reg_ex.match(data)
     if identifier_match:
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
-keywords_li = ['define', 'lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
+keywords_li = ['define', 'lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if', '=',
                'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote','reverse']
 
 def keyword_parser(data):
@@ -87,7 +89,7 @@ def arithemetic_parser(data):
         if data.startswith(item):
             return [data[:len(item)], data[len(item):]]
 
-binary_operations = ['<=', '>=', '<', '>', 'pow', 'append']
+binary_operations = ['<=', '>=', '<', '>', '=', 'pow', 'append']
 
 def binary_parser(data):
     for item in binary_operations:
