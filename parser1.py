@@ -11,11 +11,19 @@ def bracket_parser(data):
 def atom_parser(data):  # ' 가 LIST때도 쓰여서 수정해야할듯 .. 
     # ' 으로 시작하면-> 뒤에 오는거 공백까지 심볼로 처리 -> "'X" 이런식으로 묶여서 들어가는데.. 출력할때는 'X 빼고 대문자로 해야하는데 어카지
     if data[0] == "'": #처음 오는게 '이면
-       # if data[1] == '(': #그 다음에 ( 오면 -> LIST
-        atom_reg_ex = re.compile('\w+') #문자 or 숫자
-        atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
-        if atom_match:
-            return[data[:atom_match.end()+1], data[atom_match.end()+1:]]
+        if data[1] == '(': #그 다음에 ( 오면 -> LIST
+            return data[1]
+        else:
+            atom_reg_ex = re.compile('[^ \t\n\r\f\v\)]+') #문자 or 숫자
+            atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
+            if atom_match:
+                L = []
+                L.append(data[0])
+                L.append(data[1:atom_match.end()+1].upper())
+                return [L,data[atom_match.end()+1:]]    
+            
+
+      
 
 def space_parser(data): # 공백으로 시작하면
     space_reg_ex = re.compile('\s+') #공백과 매치
@@ -38,7 +46,7 @@ def identifier_parser(data):
         return[data[:identifier_match.end()], data[identifier_match.end():]]
 
 keywords_li = ['define', 'lambda', '*', '+', '-', '/', '<', '>', '<=', '>=', '%', 'if',
-               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote']
+               'length', 'abs', 'append', 'pow', 'min', 'max', 'round', 'not', 'quote','reverse']
 
 def keyword_parser(data):
     for item in keywords_li:
@@ -52,10 +60,6 @@ def declarator_parser(data):
 def lambda_parser(data):
     if data[:6] == 'lambda':
         return ['lambda', data[6:]]
-
-def quote_parser(data):
-    if data[:1] == "'":
-        return ["'", data[1:]]
 
 arithmetic_operators = ['*', '+', '-', '/', '%']
 
@@ -107,6 +111,8 @@ def expression_parser(data):
             L.append(atom(token))
         rest = rest[1:]
         return [L, rest]
+    #elif token == "'":
+
     else:
         return [token, rest]
 
@@ -116,4 +122,16 @@ def any_one_parser_factory(*args):
 value_parser = any_one_parser_factory(space_parser, bracket_parser, atom_parser, keyword_parser,
                                       number_parser, identifier_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
-                                    binary_parser, arithemetic_parser, unary_parser, quote_parser)
+                                    binary_parser, arithemetic_parser, unary_parser)
+
+def main():
+    # file_name = input()
+    # with open(file_name, 'r') as f:
+    #     data = f.read().strip()
+    
+    while(True):
+        userInput = input("> ")
+        print(expression_parser(userInput))
+
+if __name__ == "__main__":
+    main()
