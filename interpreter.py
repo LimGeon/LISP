@@ -162,6 +162,13 @@ def eval(x, dic):
         return L
     elif x[0] == 'APPEND':
         (_, *args) = x
+        appendedList = []
+        for vlist in args:
+            for val in vlist[1]:
+                appendedList.append(val)
+        resultList = ["'",]
+        resultList.append(appendedList)
+        return resultList
 
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
