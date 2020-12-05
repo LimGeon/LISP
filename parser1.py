@@ -16,7 +16,7 @@ def quote_parser(data):
             tmp.append(tmp2[0])
             return [tmp, data[tmp2[1]+2:]]
         else: #심볼처리
-            atom_reg_ex = re.compile('\w+') #문자 or 숫자
+            atom_reg_ex = re.compile('\\w+') #문자 or 숫자
             atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
             if atom_match:
                 L = []
@@ -38,7 +38,7 @@ def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
             index = index + 1
             return [L,index]
         elif data[index] not in ('\t','\n','\r','\f','\v'): #공백이 아니면
-           list_reg_ex = re.compile('\w+')
+           list_reg_ex = re.compile('\\w+')
            list_match = list_reg_ex.match(data[index:])
            if list_match:
                L.append(atom(data[index:list_match.end()+index].upper()))
@@ -47,13 +47,20 @@ def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
 
 
 def space_parser(data): # 공백으로 시작하면f
-    space_reg_ex = re.compile('\s+') #공백과 매치
+    space_reg_ex = re.compile('\\s+') #공백과 매치
     space_match = space_reg_ex.match(data)
     if space_match:
         return [data[:space_match.end()], data[space_match.end():]]
+    
 
 def number_parser(data): #숫자로 시작하면
-    number_reg_ex = re.compile('\d+')
+    number_reg_ex = re.compile('\\d+\\.?\\d*')
+    if data[0] == '-' and data[1].isdigit():
+        data = data[1:]
+        number_match = number_reg_ex.match(data)
+        if number_match:
+            return['-'+data[:number_match.end()], data[number_match.end():]]
+
     number_match = number_reg_ex.match(data)
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
@@ -61,7 +68,7 @@ def number_parser(data): #숫자로 시작하면
 
 
 def identifier_parser(data):
-    identifier_reg_ex = re.compile('\w+')
+    identifier_reg_ex = re.compile('\\w+')
     identifier_match = identifier_reg_ex.match(data)
     if identifier_match:
         return[data[:identifier_match.end()], data[identifier_match.end():]]
@@ -138,8 +145,8 @@ def expression_parser(data):
 def any_one_parser_factory(*args):
     return lambda data: (reduce(lambda f, g: f if f(data)  else g, args)(data))
 
-value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, keyword_parser,
-                                      number_parser, identifier_parser)
+value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, 
+                                    number_parser, keyword_parser, identifier_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
                                     binary_parser, arithemetic_parser, unary_parser)
 
@@ -147,7 +154,6 @@ def main():
     # file_name = input()
     # with open(file_name, 'r') as f:
     #     data = f.read().strip()
-    
     while(True):
         userInput = input("> ")
         print(expression_parser(userInput))
