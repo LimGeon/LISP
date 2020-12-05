@@ -60,16 +60,12 @@ def lambda_procedure(parms, body, *args):
 def list_procedure(*args):
     T = ["'"]
     L = []
-    for k in list(args): #차례로 받아오기
-        if isinstance(k, str): #str 일때 -> mem에 없으면 에러!
-            if k in mem:
-                L.append(mem[k])
-            # else : -> 에러처리
-        elif isinstance(k, int) or isinstance(k, float):
-            L.append(k)
-        elif isinstance(k, list): # ' 으로 시작하는.. -> symbol 인지 list 인지 구별 해줘야하나?
-            if k[0] == "'": # '으로 시작하면
-                L.append(k[1])
+    #print("args 제대로 출력: ", args)
+    for k in args: #차례로 받아오기
+        #print("k이다 임마!: ", k)
+        L.append(eval(k,lisp_to_python_dic))
+            
+        #print("이건 L이다", L)
     T.append(L)
     return T
 
@@ -112,8 +108,9 @@ def eval(x, dic):
     if isinstance(x, str):
         if x in mem:
             return mem[x]
-        else:
+        elif x in lisp_to_python_dic:
             return lisp_to_python_dic[x]
+        return x
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
@@ -132,15 +129,15 @@ def eval(x, dic):
     elif x[0] == 'SETQ':
         (_, var, exp) = x
         if isinstance(eval(exp,dic), list):
-            L = ["'"]
-            L.append(eval(exp,dic))
-            mem[var] = L
-            return L
+            mem[var] = eval(exp,dic)
+            return mem[var]
         else:
             mem[var]=eval(exp,dic)
             return mem[var]
     elif x[0] == 'LIST':
+        #print("리스트입니다!")
         (_, *args) = x
+        #print("들어가는 args: ", args)
         return list_procedure(*args)
     ########## Predicate 함수 ############
     elif x[0] == 'ATOM':
@@ -215,7 +212,6 @@ def eval(x, dic):
     elif x[0] == 'APPEND':
         (_, *args) = x
         appendedList = [] #들어온 리스트들을 모두 담아줄 리스트
-        print(args)
         for exp in args:
             if isList(eval(exp,dic))[0]: #True면..
                 if isList(eval(exp,dic))[1] == 0: # 직접 입력
@@ -223,7 +219,7 @@ def eval(x, dic):
                         appendedList.append(val)
                 elif isList(eval(exp,dic))[1]==1: #저장된 리스트
                     for val in mem[eval(exp,dic)][1]:
-                        appendedList.append(val)   
+                        appendedList.append(val)
         T = ["'"]
         T.append(appendedList)
         return T
