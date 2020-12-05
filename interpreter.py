@@ -149,7 +149,7 @@ def eval(x, dic):
         return list_procedure(*args)
     ########## Predicate 함수 ############
 
-        elif x[0] == 'REVERSE':
+    elif x[0] == 'REVERSE':
         (_, reverseList) = x
         L = ["'"]
         exp = eval(reverseList, dic)
