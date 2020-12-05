@@ -30,6 +30,7 @@ def number_parser(data): #숫자로 시작하면
         return[data[:number_match.end()], data[number_match.end():]]
 
 
+
 def identifier_parser(data):
     identifier_reg_ex = re.compile('\w+')
     identifier_match = identifier_reg_ex.match(data)
@@ -51,6 +52,10 @@ def declarator_parser(data):
 def lambda_parser(data):
     if data[:6] == 'lambda':
         return ['lambda', data[6:]]
+
+def quote_parser(data):
+    if data[:1] == "'":
+        return ["'", data[1:]]
 
 arithmetic_operators = ['*', '+', '-', '/', '%']
 
@@ -111,17 +116,4 @@ def any_one_parser_factory(*args):
 value_parser = any_one_parser_factory(space_parser, bracket_parser, atom_parser, keyword_parser,
                                       number_parser, identifier_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
-                                    binary_parser, arithemetic_parser, unary_parser)
-
-def main():
-    # file_name = input()
-    # with open(file_name, 'r') as f:
-    #     data = f.read().strip()
-    
-    while(True):
-        userInput = input("> ")
-        print(expression_parser(userInput))
-
-if __name__ == "__main__":
-    main()
-
+                                    binary_parser, arithemetic_parser, unary_parser, quote_parser)

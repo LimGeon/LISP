@@ -89,7 +89,7 @@ def eval(x, dic):
             return lisp_to_python_dic[x]
     elif not isinstance(x, list):
         return x
-    elif x[0] == 'quote':
+    elif x[0] == "'":
         (_, exp) = x
         return exp
     elif x[0] == 'if':
