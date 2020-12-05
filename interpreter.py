@@ -32,6 +32,7 @@ lisp_to_python_dic = {
     'procedure?': callable,
     'round':   round,
     'symbol?': lambda x: isinstance(x, str),
+    'LIST' : 3,
     }
 
 lisp_to_python_dic.update(vars(math))
@@ -39,6 +40,29 @@ lisp_to_python_dic.update(vars(math))
 dic_new2 = {}
 
 mem = {}
+
+def CAR_procedure(carList, dic):
+    if isList(eval(carList,dic))[0]: #true 이면
+        if isList(eval(carList,dic))[1] == 0: # 직접 입력
+            return eval(carList,dic)[1][0]
+        elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
+            return mem[eval(carList,dic)][1][0]
+
+def CDR_procedure(cdrList, dic):
+    if isList(eval(cdrList,dic))[0]: #true 이면
+        if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
+            T = ["'"]
+            T.append(eval(cdrList,dic)[1][1:])
+            return T
+        elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
+            T = ["'"]
+            T.append(mem[eval(cdrList,dic)][1][1:])
+            return T
+
+def addQuote(vlist):
+    reList = ["'",]
+    reList.append(vlist)
+    return reList
 
 def isList(vlist):
     if isinstance(vlist, list):
@@ -113,11 +137,13 @@ def eval(x, dic):
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
+
         if not isinstance(x[1],list):
             (_, exp) = x
             return exp
         else:
             return x
+
     elif x[0] == 'if':
         (_, test, conseq, alt) = x
         exp = eval(conseq,dic) if eval(test, dic) else eval(alt,dic)
@@ -134,11 +160,22 @@ def eval(x, dic):
             mem[var]=eval(exp,dic)
             return mem[var]
     elif x[0] == 'LIST':
+
         #print("리스트입니다!")
         (_, *args) = x
         #print("들어가는 args: ", args)
         return list_procedure(*args)
-    ########## Predicate 함수 ############
+   
+
+    elif x[0] == 'REVERSE':
+        (_, reverseList) = x
+        L = ["'"]
+        exp = eval(reverseList, dic)
+        if isList(exp)[0]:
+            exp[1].reverse()
+            L.append(exp[1])
+            return L
+
     elif x[0] == 'ATOM':
         (_, var) = x
         return atom_procedure(var)
@@ -179,26 +216,58 @@ def eval(x, dic):
                 L.extend(mem[consList][1])
         T.append(L)
         return T
+
+    elif x[0] == 'MEMBER':
+        (_, word, memberList) = x
+        if memberList in mem:
+            memberList = mem[memberList][1]
+            startIndex = memberList.index(word[1])
+            return memberList[startIndex:]
+    
+    elif x[0]=='REMOVE':
+        (_, var, exp)=x
+        word=eval(var,dic)
+        removeList=eval(exp,dic)
+        print(removeList[1])
+        while(True):
+            try:
+                removeList[1].remove(word)
+            except ValueError:
+                return removeList[1]
+    
+    elif x[0] == 'ASSOC':
+        (_, key, assocList) = x 
+        # assocList 예시 ["'", [["'", ['ONE', 1]], ["'", ['TWO', 2]], ["'", ['THREE', 3]]]]
+        key = eval(key, dic)
+        #assocTuple 예시 [["'", ['ONE', 1]]
+        for assocTuple in assocList[1]:
+            if key == assocTuple[1][0]:
+                return assocTuple[1][1]
+    
+    elif x[0] == 'SUBST':
+        (_, word, word_sub, substList) = x
+        word = eval(word, dic)
+        word_sub = eval(word_sub, dic)
+        sub_idx = substList[1].index(word_sub)
+        substList[1][sub_idx] = word
+        return substList
+    #     else:
+    #         print("Error")
+    
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
         (_, carList) = x
-        if isList(eval(carList,dic))[0]: #true 이면
-            if isList(eval(carList,dic))[1] == 0: # 직접 입력
-                return eval(carList,dic)[1][0]
-            elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
-                return mem[eval(carList,dic)][1][0]
+        return CAR_procedure(carList, dic)
+    
     elif x[0] == 'CDR':
         (_, cdrList) = x
-        if isList(eval(cdrList,dic))[0]: #true 이면
-            if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
-                T = ["'"]
-                T.append(eval(cdrList,dic)[1][1:])
-                return T
-            elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
-                T = ["'"]
-                T.append(mem[eval(cdrList,dic)][1][1:])
-                return T
+        return CDR_procedure(cdrList, dic)
+
+    elif x[0] == 'CADDR':
+        (_, caddrList) = x
+        return CAR_procedure(CDR_procedure(CDR_procedure ( caddrList, dic) , dic), dic)
+
     elif x[0] == 'REVERSE':
         (_, reverseList) = x
         L = ["'"]
@@ -236,7 +305,8 @@ def eval(x, dic):
         T = ["'"]
         T.append(appendedList)
         return T
-    
+     ########## Predicate 함수 ############
+
     #(MINUSP X) ; X가 음수일 때만 참(true)을 반환함. X가 숫자가 아니면 ERROR 발생
     #elif x[0] == 'MINUSP':
 
@@ -263,8 +333,8 @@ def eval(x, dic):
             return args
 
 
-def main():  
-     while(True):
+def main():
+    while(True):
         userInput = input("> ")
         print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
 
