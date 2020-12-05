@@ -188,12 +188,12 @@ def eval(x, dic):
                 L.extend(mem[consList][1])
         return L
 
-    # elif x[0] == 'MEMBER':
-    #     (_, word, memberList) = x
-    #     if memberList in mem:
-    #         memberList = mem[memberList][1]
-    #         startIndex = memberList.index(word)
-    #         for i in range(startIndex)
+    elif x[0] == 'MEMBER':
+        (_, word, memberList) = x
+        if memberList in mem:
+            memberList = mem[memberList][1]
+            startIndex = memberList.index(word[1])
+            return memberList[startIndex:]
             
 
     #     else:
