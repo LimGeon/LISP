@@ -151,23 +151,34 @@ def eval(x, dic):
                 return mem[eval(nthList, dic)][eval(exp, dic)]
     elif x[0]=='CONS':
         (_, var, consList) = x
+        T=["'"]
         L=[]
+        var = eval(var, dic)
+        consList = eval(consList, dic)
+        print(var)
         if isinstance(var,int) or isinstance(var,float):
             L.append(var)
         elif isinstance(var, str):
             if var in mem:
                 L.append(mem[var])
-        elif atom_procedure(var):
-            L.extend(var[1])
+            L.append(var)
+        elif isinstance(var, list):
+            L.append(var)
+            
         if isinstance(consList, str):
             if consList in mem:
-                L.extend(mem[consList])
+                if mem[consList][0] == "'":
+                    if isinstance(mem[consList][1], list):
+                        L.extend(mem[consList][1])
+                elif isinstance(mem[consList],int) or isinstance(mem[consList],float):
+                    L.extend(mem[consList])
         elif isList(consList)[0]:  # true 이면
             if isList(consList)[1] == 0:  # 직접 입력
                 L.extend(consList[1])
             elif isList(consList)[1] == 1:  # 저장된 리스트
                 L.extend(mem[consList][1])
-        return L
+        T.append(L)
+        return T
     #(NULL X) ;  X가 NIL일 때만 참(true)을 반환함.
     #elif x[0] == 'NULL':
     elif x[0] == 'CAR':
