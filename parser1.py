@@ -11,8 +11,15 @@ def bracket_parser(data):
 def quote_parser(data):
     if data[0] == "'": #처음 오는게 '이면
         if data[1] == '(': #그 다음에 ( 오면 -> LIST
+<<<<<<< HEAD
             tmp = list_parser(data[2:])
             return [tmp[0], data[tmp[1]+1:]]
+=======
+            tmp = ["'"]
+            tmp2 = list_parser(data[2:])
+            tmp.append(tmp2[0])
+            return [tmp, data[tmp2[1]+2:]]
+>>>>>>> xxeol
         else: #심볼처리
             atom_reg_ex = re.compile('[^\t\n\r\f\v\)]+') #문자 or 숫자
             atom_match = atom_reg_ex.match(data[1:]) #다음것부터.. 공백올때까지
