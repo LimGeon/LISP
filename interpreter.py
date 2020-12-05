@@ -110,7 +110,6 @@ def eval(x, dic):
             return mem[x]
         elif x in lisp_to_python_dic:
             return lisp_to_python_dic[x]
-        return x
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
@@ -190,10 +189,13 @@ def eval(x, dic):
                 T.append(mem[eval(cdrList,dic)][1][1:])
                 return T
     elif x[0] == 'REVERSE':
-        (_, reverselist) = x
-        if isList(reverselist)[0]:
-            reverselist[1].reverse()
-            return reverselist[1]
+        (_, reverseList) = x
+        L = ["'"]
+        exp = eval(reverseList, dic)
+        if isList(exp)[0]:
+            exp[1].reverse()
+            L.append(exp[1])
+            return L
     elif x[0]=='LENGTH':
         (_,lengthList)=x
         if isList(lengthList)[0]:
