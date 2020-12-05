@@ -116,9 +116,12 @@ def eval(x, dic):
             return lisp_to_python_dic[x]
     elif not isinstance(x, list):
         return x
-    elif x[0] == "'":
-        (_, exp) = x
-        return exp
+    elif x[0] == "'": # ["'" , "X"]
+        if not isinstance(x[1],list):
+            (_, exp) = x
+            return exp
+        else:
+            return x
     elif x[0] == 'if':
         (_, test, conseq, alt) = x
         exp = eval(conseq,dic) if eval(test, dic) else eval(alt,dic)
@@ -209,6 +212,21 @@ def eval(x, dic):
     elif x[0] == 'ZEROP':
         (_, var) = x
         return zerop_procedure(var)
+    elif x[0] == 'APPEND':
+        (_, *args) = x
+        appendedList = [] #들어온 리스트들을 모두 담아줄 리스트
+        print(args)
+        for exp in args:
+            if isList(eval(exp,dic))[0]: #True면..
+                if isList(eval(exp,dic))[1] == 0: # 직접 입력
+                    for val in eval(exp,dic)[1]:
+                        appendedList.append(val)
+                elif isList(eval(exp,dic))[1]==1: #저장된 리스트
+                    for val in mem[eval(exp,dic)][1]:
+                        appendedList.append(val)   
+        T = ["'"]
+        T.append(appendedList)
+        return T
     
     #(MINUSP X) ; X가 음수일 때만 참(true)을 반환함. X가 숫자가 아니면 ERROR 발생
     #elif x[0] == 'MINUSP':
@@ -224,7 +242,6 @@ def eval(x, dic):
     
     #(STRINGP X) ;  X가 STRING일 때만 참(true)을 반환함.
     #elif x[0] == 'STRINGP':
-
     elif x[0] == 'lambda':
         (_, parms, body, *args) = x
         return lambda_procedure(parms, body, args)
