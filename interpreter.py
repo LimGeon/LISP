@@ -85,7 +85,6 @@ def zerop_procedure(var):  # var이 0인지 판별
 
 
 def eval(x):
-    print("x: ",x)
     if isinstance(x, str):
         #print("dfj",x[:7])
         if x in mem:
