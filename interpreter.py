@@ -82,6 +82,8 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
 def list_procedure(*args):
+    if len(args) == 0:
+        return "ERROR : 입력값이 너무 적어요 ㅠㅠ"
     T = ["'"]
     L = []
     #print("args 제대로 출력: ", args)
@@ -121,8 +123,8 @@ def eval(x, dic):
             return mem[x]
         elif x in lisp_to_python_dic:
             return lisp_to_python_dic[x]
-        else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
-            return "ERROR : 저장된 변수가 아닙니다..ㅠ"
+        # else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
+        #     return "ERROR : 저장된 변수가 아닙니다..ㅠ"
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
@@ -239,14 +241,16 @@ def eval(x, dic):
         
         if not isinstance(var,str): #스트링이 아니면 에러처리
             return "ERROR : 입력값이 잘못됐어요.. (변수)"
+            
+        # if isinstance(eval(exp,dic), list): # list이면..?
+        #     mem[var] = eval(exp,dic)
+        #     return mem[var]
+        # else:
+        #     mem[var]=eval(exp,dic)
+        #     return mem[var]
 
-        
-        if isinstance(eval(exp,dic), list): # list이면..?
-            mem[var] = eval(exp,dic)
-            return mem[var]
-        else:
-            mem[var]=eval(exp,dic)
-            return mem[var]
+        mem[var] = eval(exp,dic)
+        return mem[var]
 
 
     elif x[0] == 'LIST':
@@ -463,8 +467,8 @@ def eval(x, dic):
         else:
             return False
 
-    else:
-        return "ERROR : 올바르지 않은 자료형!"
+    # else:
+    #     return "ERROR : 올바르지 않은 자료형!"
         # proc = eval(x[0], dic)
         # args = [eval(exp, dic) for exp in x[1:]]
         # try: return proc(args)
@@ -504,6 +508,8 @@ def main():
         rv = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
         if isinstance(rv, list): # 리스트면
             print(printlist(rv))
+        elif rv == None:
+            print("Error : 잘못된 입력 값!")
         else: # 리스트가 아니면
             print(rv)
         #print(rv)
