@@ -253,8 +253,7 @@ def eval(x):
                 try:
                     return eval(nthList)[1][eval(exp)]
                 except IndexError:
-                    print("ERROR: Index에 벗어났습니다.")
-                    main()
+                    return False
             elif isList(eval(nthList))[1] == 1:  # 저장된 리스트
                 try:
                     return mem[eval(nthList)][eval(exp)]
@@ -528,10 +527,11 @@ def main():
         rv = eval(expression_parser(userInput).pop(0))
         if isinstance(rv, list):  # 리스트면
             print(printlist(rv))
-        elif rv == False:
-            print("NIL")
-        elif rv == True:
-            print("T")
+        elif isinstance(rv, bool):
+            if rv == False:
+                print("NIL")
+            elif rv == True:
+                print("T")
         elif rv == None:
             print("Error : 잘못된 입력 값!")
         else:  # 리스트가 아니면
