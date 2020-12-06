@@ -51,7 +51,19 @@ def space_parser(data): # 공백으로 시작하면f
     space_match = space_reg_ex.match(data)
     if space_match:
         return [data[:space_match.end()], data[space_match.end():]]
-    
+
+def string_parser(data):
+    string_reg_ex = re.compile('".+"')
+    string_match = string_reg_ex.match(data)
+    if string_match:
+        return[data[:string_match.end()], data[string_match.end():]]
+        
+
+special_characters = ['#', '\\']
+def special_parser(data):
+     for item in special_characters:
+        if data.startswith(item):
+            return [data[:len(item)], data[len(item):]]
 
 def number_parser(data): #숫자로 시작하면
     number_reg_ex = re.compile('\\d+\\.?\\d*')
@@ -65,7 +77,9 @@ def number_parser(data): #숫자로 시작하면
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
 
-
+def comment_parser(data):
+    commentIdx = data.find(';')
+    return data[:commentIdx]
 
 def identifier_parser(data):
     identifier_reg_ex = re.compile('\\w+')
@@ -145,7 +159,7 @@ def expression_parser(data):
 def any_one_parser_factory(*args):
     return lambda data: (reduce(lambda f, g: f if f(data)  else g, args)(data))
 
-value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, 
+value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, string_parser, special_parser, 
                                     number_parser, keyword_parser, identifier_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
                                     binary_parser, arithemetic_parser, unary_parser)
@@ -156,6 +170,7 @@ def main():
     #     data = f.read().strip()
     while(True):
         userInput = input("> ")
+        userInput = comment_parser(userInput)
         print(expression_parser(userInput))
 
 if __name__ == "__main__":

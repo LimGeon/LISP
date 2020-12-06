@@ -123,8 +123,11 @@ def eval(x, dic):
             return mem[x]
         elif x in lisp_to_python_dic:
             return lisp_to_python_dic[x]
-        # else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
+        elif x[0] == '"' and x[-1] == '"':
+            return x
+                  # else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
         #     return "ERROR : 저장된 변수가 아닙니다..ㅠ"
+
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
@@ -461,11 +464,11 @@ def eval(x, dic):
         return lambda_procedure(parms, body, args)
 
     elif x[0] == 'STRINGP':
-        (_,var)=x
-        if isinstance(eval(x,dic),str):
-            return True
-        else:
-            return False
+        (_,*var)=x
+        if len(var) == 1:
+            if isinstance(eval(var,dic),str):
+                return True
+        return False
 
     # else:
     #     return "ERROR : 올바르지 않은 자료형!"
@@ -512,7 +515,6 @@ def main():
             print("Error : 잘못된 입력 값!")
         else: # 리스트가 아니면
             print(rv)
-        #print(rv)
 
 if __name__ == "__main__":
     main()
