@@ -275,38 +275,29 @@ def eval(x):
                     return mem[eval(nthList)][eval(exp)]
                 except IndexError:
                     return "ERROR: Index에 벗어났습니다"
+
     elif x[0] == 'CONS':
-        (_, var, consList) = x
+        (_, var, consList,*args) = x
+        if(len(args)>0):
+            return "ERROR : 입력이 잘못되었습니다"
         T = ["'"]
         L = []
         var = eval(var)
         consList = eval(consList)
         # print(var)
-        if var == None:
+        if (var == None) or (consList == None):
             return "ERROR : 잘못된 입력값!"
-        if isinstance(var, int) or isinstance(var, float):
+        else:
             L.append(var)
-        elif isinstance(var, str):
-            if var in mem:
-                L.append(mem[var])
-            L.append(var)
-        elif isinstance(var, list):
-            L.append(var)
-        if isinstance(consList, str):
-            if consList in mem:
-                if mem[consList][0] == "'":
-                    if isinstance(mem[consList][1], list):
-                        L.extend(mem[consList][1])
-                elif isinstance(mem[consList], int) or isinstance(mem[consList], float):
-                    L.extend(mem[consList])
-        elif isList(consList)[0]:  # true 이면
-            if isList(consList)[1] == 0:  # 직접 입력
-                L.extend(consList[1])
-            elif isList(consList)[1] == 1:  # 저장된 리스트
-                L.extend(mem[consList][1])
+        if isList(consList)[0]:
+            if isList(consList)[1] == 0:
+                for val in consList[1]:
+                    L.append(val)
+            elif isList(consList)[1] == 1:
+                for val in consList[1]:
+                    L.append(val)
         T.append(L)
         return T
-
     elif x[0] == 'MEMBER':
         (_, word, memberList) = x
         T = ["'"]
