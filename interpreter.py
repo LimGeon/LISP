@@ -118,6 +118,8 @@ def zerop_procedure(var): # var이 0인지 판별
 
 ########################### eval 함수 - 핵심 ###########################################
 def eval(x, dic):
+
+
     if isinstance(x, str):
         if x in mem:
             return mem[x]
@@ -205,18 +207,24 @@ def eval(x, dic):
         (_, test, conseq, *alt) = x 
         if len(alt)>=2 : #alt 2개 이상이면 에러처리
             return "ERROR : 입력값이 너무 많아요 ㅠㅠ"
-        if eval(test, dic):
+        if isinstance(eval(test, dic), bool):
+            return "ERROR : 조건문에 잘못된 조건식이 들어가있어요~"
+        if eval(test, dic): # 조건문이 참이라면 아래 명령 수행
             exp = eval(conseq, dic)
-        elif alt is None: # alt 가 없을때
-            return False ###################이거 왜 해준거라했지 건아..? #################
-        else:
+        elif alt is None: # 위의 eval에서 True가 안나오면 Else에 가야하는데 alt가 없을 때는 FALSE를 반환
+            return False 
+        else: # else를 실행해야하고 alt가 있는 경우에는 alt 내용을 수행
             exp = eval(alt[0], dic)
         return eval(exp, dic)
     
     elif x[0] == 'COND':
         (_, *ifexp) = x
+        if(len(ifexp)<1):
+            return "ERROR : 조건문에 잘못된 조건식이 들어가있어요~"
         for exp in ifexp:
             test = exp[0]
+            if isinstance(eval(test, dic), bool):
+                return "ERROR : 조건문에 잘못된 조건식이 들어가있어요~"
             conseq = exp[1]
             if eval(test, dic):
                 return eval(conseq, dic)
@@ -321,11 +329,14 @@ def eval(x, dic):
     elif x[0] == 'MEMBER':
         (_, word, memberList) = x
         T = ["'"]
+        word = eval(word, dic)
+        memberList = eval(memberList, dic)
         if memberList in mem:
             memberList = mem[memberList][1]
             startIndex = memberList.index(word[1])
             T.append(memberList[startIndex:])
             return T
+        return "ERROR : 찾고자 하는 값이 리스트 안에 없어요ㅠ"
     
     elif x[0]=='REMOVE':
         (_, var, exp)=x
@@ -343,18 +354,24 @@ def eval(x, dic):
         (_, key, assocList) = x 
         # assocList 예시 ["'", [["'", ['ONE', 1]], ["'", ['TWO', 2]], ["'", ['THREE', 3]]]]
         key = eval(key, dic)
+        assocList = eval(assocList, dic)
         #assocTuple 예시 [["'", ['ONE', 1]]
         for assocTuple in assocList[1]:
-            if key == assocTuple[1][0]:
-                return assocTuple[1][1]
+            if key == eval(assocTuple[1][0], dic):
+                return eval(assocTuple[1], dic)
+        return "ERROR : 리스트 안에 찾고자하는 key 값이 없네요........"
     
     elif x[0] == 'SUBST':
         (_, word, word_sub, substList) = x
         word = eval(word, dic)
         word_sub = eval(word_sub, dic)
-        sub_idx = substList[1].index(word_sub)
-        substList[1][sub_idx] = word
-        return substList
+        substList = eval(substList, dic)
+        try:
+            sub_idx = substList[1].index(word_sub)
+            substList[1][sub_idx] = word
+            return substList
+        except:
+            return "ERROR : 대체하고자 하는 단어가 리스트 안에 없네요....."
     #     else:
     #         print("Error")
     
