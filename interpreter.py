@@ -316,8 +316,8 @@ def eval(x):
         assocList = eval(assocList)
         #assocTuple 예시 [["'", ['ONE', 1]]
         for assocTuple in assocList[1]:
-            if key == eval(assocTuple[1][0]):
-                return eval(assocTuple[1])
+            if key == eval(assocTuple)[1][0]:
+                return eval(assocTuple)
         print("ERROR : 리스트 안에 찾고자하는 key 값이 없네요........")
         main()
     

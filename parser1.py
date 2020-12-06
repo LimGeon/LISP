@@ -1,6 +1,12 @@
-### Lisp Intrepreter in Python
-## Parser
-# hyo test
+"""
+제작자:
+유효창 20190551
+정설희 20193574
+임  건 20192848
+
+파일명: parser1.py
+완료 날짜: 2020.12.06
+"""
 from functools import reduce
 import re 
 
