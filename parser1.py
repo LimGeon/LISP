@@ -181,7 +181,6 @@ def main():
     while(True):
         userInput = input("> ")
         userInput = comment_parser(userInput)
-        print(userInput)
         print(expression_parser(userInput))
 
 if __name__ == "__main__":
