@@ -1,16 +1,17 @@
 #interpreter
-#xxeol test
 import math
 import operator as op
 from functools import reduce
 from parser1 import expression_parser
 
+#### 기본적인 연산들 (ex. 사칙연산) 을 위한 딕셔너리 ####
 lisp_to_python_dic = {
     '+':lambda *x: reduce(op.add, *x), '-':lambda *x: reduce(op.sub, *x),
     '*':lambda *x: reduce(op.mul, *x), '/':lambda *x: reduce(op.truediv, *x),
     '>':lambda *x: reduce(op.gt, *x), '<':lambda *x: reduce(op.lt, *x),
     '>=':lambda *x: reduce(op.ge, *x), '<=':lambda *x: reduce(op.le, *x),
     '=':lambda *x: reduce(op.eq, *x),
+    ########### 밑으로 다 주석처리 해도되지않을까???##############33
     'abs':     abs,
     'append':  lambda *x: reduce(op.add, *x),
     'apply':   lambda x: x[0](x[1:]),
@@ -37,39 +38,39 @@ lisp_to_python_dic = {
 
 lisp_to_python_dic.update(vars(math))
 
-dic_new2 = {}
+dic_new2 = {} #lambda식을 위한 딕셔너리
 
-mem = {}
+mem = {} #SETQ를 통한 변수 저장을 위한 딕셔너리
 
 def CAR_procedure(carList, dic):
     if isList(eval(carList,dic))[0]: #true 이면
         if isList(eval(carList,dic))[1] == 0: # 직접 입력
-            return eval(carList,dic)[1][0]
+            return eval(carList,dic)[1][0] #리스트의 첫번째 원소 return (원소)
         elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
-            return mem[eval(carList,dic)][1][0]
+            return mem[eval(carList,dic)][1][0] #리스트의 첫번째 원소 return (원소)
 
 def CDR_procedure(cdrList, dic):
     if isList(eval(cdrList,dic))[0]: #true 이면
         if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
-            T = ["'"]
-            T.append(eval(cdrList,dic)[1][1:])
-            return T
+            T = ["'"] # 리스트임을 나타내기 위한 quote
+            T.append(eval(cdrList,dic)[1][1:]) #리스트의 두번째 원소부터 return (리스트 형식)
+            return T # 리스트 return
         elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
-            T = ["'"]
-            T.append(mem[eval(cdrList,dic)][1][1:])
-            return T
+            T = ["'"] # 리스트임을 나타내기 위한 quote
+            T.append(mem[eval(cdrList,dic)][1][1:]) #리스트의 두번째 원소부터 return (리스트 형식)
+            return T #리스트 return
 
-def addQuote(vlist):
-    reList = ["'",]
-    reList.append(vlist)
-    return reList
+# def addQuote(vlist):
+#     reList = ["'",]
+#     reList.append(vlist)
+#     return reList
 
-def isList(vlist):
-    if isinstance(vlist, list):
+def isList(vlist): #리스트인지 확인하기 위한 함수 -> 리스트 형식이고 첫번째 원소 값이 '인 경우에 -> 심볼인지 리스트인지
+    if isinstance(vlist, list): #리스트 형식이면 
         if vlist[0] == "'":
             if isinstance(vlist[1], list):
                 return [True,0] #직접 list 입력
-    elif isinstance(vlist, str):
+    elif isinstance(vlist, str): #str 형식이면 -> mem에 저장된 변수인지 확인 -> 저장되어있다면 그에 맞는 value값 list형인지 확인
         if vlist in mem:
             if mem[vlist][0] == "'" and isinstance(mem[vlist][1],list):
                 return [True,1] #mem에 저장되어있는 list
@@ -80,8 +81,9 @@ def lambda_procedure(parms, body, *args):
     dic_new2.update(lisp_to_python_dic)
     dic_new2.update(dic_new)
     return eval(body, dic_new2)
-
 def list_procedure(*args):
+    if len(args) == 0:
+        return "ERROR : 입력값이 너무 적어요 ㅠㅠ"
     T = ["'"]
     L = []
     #print("args 제대로 출력: ", args)
@@ -99,20 +101,22 @@ def numberp_procedure(var):
                 return True
     return False
 
-def zerop_procedure(var):
-    if isinstance(var,int):
+def zerop_procedure(var): # var이 0인지 판별
+    #int나 float 형일때는 그 자체를 0과 비교
+    if isinstance(var,int): 
         if var == 0:
             return True
-    elif isinstance(var,float): #int일때랑 합쳐줘도 되나?
+    elif isinstance(var,float):
         if var == 0:
             return True
-    elif isinstance(var,str):
+    elif isinstance(var,str):  #str 형식이면 -> mem에 저장된 변수인지 확인 -> 저장되어있다면 그의 value값 0인지 check
         if var in mem:
             if mem[var] == 0:
                 return True
-    else: #숫자가 아닐 때.. 사실 나중에 Error 처리 해줘야하는데 일단 False로
+    else: #숫자 및 스트링이 아닐 때.. 사실 나중에 Error 처리 해줘야하는데 일단 False로
         return False        
 
+########################### eval 함수 - 핵심 ###########################################
 def eval(x, dic):
     if isinstance(x, str):
         if x in mem:
@@ -121,6 +125,8 @@ def eval(x, dic):
             return lisp_to_python_dic[x]
         elif x[0] == '"' and x[-1] == '"':
             return x
+                  # else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
+        #     return "ERROR : 저장된 변수가 아닙니다..ㅠ"
 
     elif not isinstance(x, list):
         return x
@@ -130,13 +136,79 @@ def eval(x, dic):
             return exp
         else:
             return x
+    elif x[0] == '+':
+        (_, *args) = x
+        tmp = 0
+        for i in args:
+            i = eval(i,dic)
+            if isinstance(i, int) or isinstance(i, float): #숫자일때
+                tmp = tmp + i
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
+        return tmp 
 
-    elif x[0] == 'IF':
-        (_, test, conseq, *alt) = x #alt 2개 이상이면 에러처리
+    elif x[0] == '-':
+        (_, *args) = x
+        tmp = 0
+        index = 0
+        for i in args:
+            index = index + 1
+            i = eval(i,dic)
+            if isinstance(i,int) or isinstance(i,float): # 숫자일때
+                if index == 1 : #첫번째 원소일때
+                    tmp = tmp + i
+                else:
+                    tmp = tmp - i
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
+        return tmp   
+
+    elif x[0] == '*':
+        (_, *args) = x
+        tmp = 0
+        index = 0
+        for i in args:
+            index = index + 1
+            i = eval(i,dic)
+            if isinstance(i,int) or isinstance(i,float): # 숫자일때
+                if index == 1 : #첫번째 원소일때
+                    tmp = tmp + i
+                else:
+                    tmp = tmp * i
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
+                
+        return tmp   
+
+
+    elif x[0] == '/':
+        (_, *args) = x
+        tmp = 0
+        index = 0
+        for i in args:
+            index = index + 1
+            i = eval(i,dic)
+            if isinstance(i,int) or isinstance(i,float): # 숫자일때
+                if index == 1 : #첫번째 원소일때
+                    tmp = tmp + i
+                else:
+                    if i == 0:
+                        return "ERROR : 0으로 나눌 순 없어용"
+                    else :
+                        tmp = tmp / i
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
+        return tmp   
+
+    ##################수정요망####################
+    elif x[0] == 'IF': ################ IF return 값 수정해줘야함 #############
+        (_, test, conseq, *alt) = x 
+        if len(alt)>=2 : #alt 2개 이상이면 에러처리
+            return "ERROR : 입력값이 너무 많아요 ㅠㅠ"
         if eval(test, dic):
             exp = eval(conseq, dic)
-        elif alt is None:
-            return False
+        elif alt is None: # alt 가 없을때
+            return False ###################이거 왜 해준거라했지 건아..? #################
         else:
             exp = eval(alt[0], dic)
         return eval(exp, dic)
@@ -149,7 +221,6 @@ def eval(x, dic):
             if eval(test, dic):
                 return eval(conseq, dic)
 
-    
     elif x[0] == 'PRINT':
         (_, val) = x
         val = eval(val, dic)
@@ -158,19 +229,35 @@ def eval(x, dic):
     elif x[0] == 'define':
         (_, var, exp) = x
         dic[var] = eval(exp, dic)
-    elif x[0] == 'SETQ':
+    
+    
+    elif x[0] == 'SETQ': # argument 2개 아니면 error
+        
+        #입력값 2개 아니면 에러 처리
+        (_, *inputcheck) = x
+        if len(inputcheck) < 2:
+            return "ERROR : 입력값이 너무 적어요 ㅠㅠ"
+        elif len(inputcheck) > 2:
+            return "ERROR : 입력값이 너무 많아요 ㅠㅠ"
+        
         (_, var, exp) = x
-        if isinstance(eval(exp,dic), list):
-            mem[var] = eval(exp,dic)
-            return mem[var]
-        else:
-            mem[var]=eval(exp,dic)
-            return mem[var]
-    elif x[0] == 'LIST':
+        
+        if not isinstance(var,str): #스트링이 아니면 에러처리
+            return "ERROR : 입력값이 잘못됐어요.. (변수)"
+            
+        # if isinstance(eval(exp,dic), list): # list이면..?
+        #     mem[var] = eval(exp,dic)
+        #     return mem[var]
+        # else:
+        #     mem[var]=eval(exp,dic)
+        #     return mem[var]
 
-        #print("리스트입니다!")
+        mem[var] = eval(exp,dic)
+        return mem[var]
+
+
+    elif x[0] == 'LIST':
         (_, *args) = x
-        #print("들어가는 args: ", args)
         return list_procedure(*args)
    
 
@@ -383,13 +470,14 @@ def eval(x, dic):
                 return True
         return False
 
-    else:
-        proc = eval(x[0], dic)
-        args = [eval(exp, dic) for exp in x[1:]]
-        try: return proc(args)
-        except TypeError:
-            args=[eval(exp,dic) for exp in x[0:]]
-            return args
+    # else:
+    #     return "ERROR : 올바르지 않은 자료형!"
+        # proc = eval(x[0], dic)
+        # args = [eval(exp, dic) for exp in x[1:]]
+        # try: return proc(args)
+        # except TypeError:
+        #     args=[eval(exp,dic) for exp in x[0:]]
+        #     return args
 
 def printlist(l):
     if l[0] == "'" and isinstance(l[1],list):
@@ -420,12 +508,11 @@ def printlist(l):
 def main():
     while(True):
         userInput = input("> ")
-        # print("type : " , type(eval(expression_parser(userInput).pop(0), lisp_to_python_dic)))
-        # print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
-
         rv = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
         if isinstance(rv, list): # 리스트면
             print(printlist(rv))
+        elif rv == None:
+            print("Error : 잘못된 입력 값!")
         else: # 리스트가 아니면
             print(rv)
 
