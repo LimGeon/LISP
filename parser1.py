@@ -52,7 +52,14 @@ def space_parser(data): # 공백으로 시작하면f
     if space_match:
         return [data[:space_match.end()], data[space_match.end():]]
 
-special_characters = ['#', '"']
+def string_parser(data):
+    string_reg_ex = re.compile('".+"')
+    string_match = string_reg_ex.match(data)
+    if string_match:
+        return[data[:string_match.end()], data[string_match.end():]]
+        
+
+special_characters = ['#', '\\']
 def special_parser(data):
      for item in special_characters:
         if data.startswith(item):
@@ -150,7 +157,7 @@ def expression_parser(data):
 def any_one_parser_factory(*args):
     return lambda data: (reduce(lambda f, g: f if f(data)  else g, args)(data))
 
-value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, special_parser, 
+value_parser = any_one_parser_factory(space_parser, bracket_parser, quote_parser, string_parser, special_parser, 
                                     number_parser, keyword_parser, identifier_parser)
 key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
                                     binary_parser, arithemetic_parser, unary_parser)

@@ -119,6 +119,9 @@ def eval(x, dic):
             return mem[x]
         elif x in lisp_to_python_dic:
             return lisp_to_python_dic[x]
+        elif x[0] == '"' and x[-1] == '"':
+            return x
+
     elif not isinstance(x, list):
         return x
     elif x[0] == "'": # ["'" , "X"]
@@ -374,11 +377,11 @@ def eval(x, dic):
         return lambda_procedure(parms, body, args)
 
     elif x[0] == 'STRINGP':
-        (_,var)=x
-        if isinstance(eval(var,dic),str):
-            return True
-        else:
-            return False
+        (_,*var)=x
+        if len(var) == 1:
+            if isinstance(eval(var,dic),str):
+                return True
+        return False
 
     else:
         proc = eval(x[0], dic)
@@ -419,7 +422,6 @@ def main():
         userInput = input("> ")
         # print("type : " , type(eval(expression_parser(userInput).pop(0), lisp_to_python_dic)))
         # print(eval(expression_parser(userInput).pop(0), lisp_to_python_dic))
-
 
         rv = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
         if isinstance(rv, list): # 리스트면
