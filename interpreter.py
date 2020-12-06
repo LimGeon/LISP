@@ -186,12 +186,12 @@ def eval(x):
         if len(alt) >= 2:  # alt 2개 이상이면 에러처리
             print("ERROR : 입력값이 너무 많아요 ㅠㅠ")
             main()
-        if isinstance(eval(test), bool):
+        if not isinstance(eval(test), bool):
             print("ERROR : 조건문에 잘못된 조건식이 들어가있어요~")
             main()
         if eval(test): # 조건문이 참이라면 아래 명령 수행
-            exp = eval(conseq)
-        elif alt is None: # 위의 eval에서 True가 안나오면 Else에 가야하는데 alt가 없을 때는 FALSE를 반환
+            return eval(conseq)
+        elif alt == []: # 위의 eval에서 True가 안나오면 Else에 가야하는데 alt가 없을 때는 FALSE를 반환
             return False 
         else: # else를 실행해야하고 alt가 있는 경우에는 alt 내용을 수행
             exp = eval(alt[0])
@@ -200,11 +200,11 @@ def eval(x):
     elif x[0] == 'COND':
         (_, *ifexp) = x
         if(len(ifexp)<1):
-            print("ERROR : 조건문에 잘못된 조건식이 들어가있어요~")
+            print("ERROR : 조건식이 없어요")
             main()
         for exp in ifexp:
             test = exp[0]
-            if isinstance(eval(test), bool):
+            if not isinstance(eval(test), bool):
                 print("ERROR : 조건문에 잘못된 조건식이 들어가있어요~")
                 main()
             conseq = exp[1]
@@ -215,6 +215,7 @@ def eval(x):
         (_, val) = x
         val = eval(val)
         print(val)
+        return val
 
 
     elif x[0] == 'SETQ':  # argument 2개 아니면 error
@@ -245,9 +246,9 @@ def eval(x):
 
         exp = eval(exp)
         if isinstance(exp, list):
-            return "NIL"
+            return False
         elif isinstance(exp, int) or isinstance(exp, float):
-            return "NIL"
+            return False
         elif isinstance(exp, str):
             return True
     elif x[0] == 'NTH':
@@ -437,7 +438,7 @@ def eval(x):
         if isList(exp)[0]:
             return exp[1] == []
         else:
-            return "NIL"
+            return False
     elif x[0] == 'MINUSP':
         (_, exp) = x
         exp = eval(exp)
@@ -445,7 +446,7 @@ def eval(x):
             if exp < 0:
                 return True
             else:
-                return "NIL"
+                return False
         else:
             print("ERROR : 숫자를 입력하세요")
             main()
@@ -459,7 +460,7 @@ def eval(x):
             if eval(var1) == eval(var2):
                 return True
             else:
-                return "NIL"
+                return False
         except TypeError:
             print("ERROR : 맞는 형태가 아닙니다")
             main()
@@ -473,7 +474,21 @@ def eval(x):
             if eval(var1) < eval(var2):
                 return True
             else:
-                return "NIL"
+                return False
+        except TypeError:
+            print("ERROR : 맞는 형태가 아닙니다")
+            main()
+
+    elif x[0] == '>':
+        (_, var1, var2, *args) = x
+        if (len(args) > 0):
+            print("ERROR : 인자 입력이 잘못되었습니다")
+            main()
+        try:
+            if eval(var1) > eval(var2):
+                return True
+            else:
+                return False
         except TypeError:
             print("ERROR : 맞는 형태가 아닙니다")
             main()
@@ -487,7 +502,7 @@ def eval(x):
             if eval(var1) == eval(var2):
                 return True
             else:
-                return "NIL"
+                return False
         except TypeError:
             print("ERROR : 맞는 형태가 아닙니다")
             main()
@@ -501,7 +516,7 @@ def eval(x):
             if eval(var1) >= eval(var2):
                 return True
             else:
-                return "NIL"
+                return False
         except TypeError:
             print("ERROR : 맞는 형태가 아닙니다")
             main()
