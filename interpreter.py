@@ -135,78 +135,60 @@ def eval(x, dic):
         (_, *args) = x
         tmp = 0
         for i in args:
-            if not (isinstance(i,int) or isinstance(i,float)): #int도 아니고 float도 아닐때.. ->ex. 스트링?
-                if i in mem:
-                    if isinstance(mem[i],int) or isinstance(mem[i],float):
-                        tmp = tmp + mem[i]
-                else:
-                    return "ERROR : 올바르지 않은 자료형!"
-            else:
+            i = eval(i,dic)
+            if isinstance(i, int) or isinstance(i, float): #숫자일때
                 tmp = tmp + i
-        return tmp
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
+        return tmp 
+
     elif x[0] == '-':
         (_, *args) = x
         tmp = 0
         for i in args:
-            if not (isinstance(i,int) or isinstance(i,float)): #int도 아니고 float도 아닐때.. ->ex. 스트링?
-                if i in mem:
-                    if isinstance(mem[i],int) or isinstance(mem[i],float):
-                        if i == args[0] : #첫번째 원소일 때
-                            tmp = tmp + mem[i]
-                        else:
-                            tmp = tmp - mem[i]
-                else:
-                    return "ERROR : 올바르지 않은 자료형!"
-            else:
-                if i == args[0] :
+            index = i
+            i = eval(i,dic)
+            if isinstance(i,int) or isinstance(i,float): # 숫자일때
+                if index == 0 : #첫번째 원소일때
                     tmp = tmp + i
                 else:
                     tmp = tmp - i
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
         return tmp   
+
     elif x[0] == '*':
         (_, *args) = x
         tmp = 0
         for i in args:
-            if not (isinstance(i,int) or isinstance(i,float)): #int도 아니고 float도 아닐때.. ->ex. 스트링?
-                if i in mem:
-                    if isinstance(mem[i],int) or isinstance(mem[i],float):
-                        if i == args[0] : #첫번째 원소일 때
-                            tmp = tmp + mem[i]
-                        else:
-                            tmp = tmp * mem[i]
-                else:
-                    return "ERROR : 올바르지 않은 자료형!"
-            else:
-                if i == args[0] :
+            index = i
+            i = eval(i,dic)
+            if isinstance(i,int) or isinstance(i,float): # 숫자일때
+                if index == 0 : #첫번째 원소일때
                     tmp = tmp + i
                 else:
                     tmp = tmp * i
-        return tmp           
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
+        return tmp   
+
     elif x[0] == '/':
         (_, *args) = x
         tmp = 0
         for i in args:
-            if not (isinstance(i,int) or isinstance(i,float)): #int도 아니고 float도 아닐때.. ->ex. 스트링?
-                if i in mem:
-                    if isinstance(mem[i],int) or isinstance(mem[i],float):
-                        if i == args[0] : #첫번째 원소일 때
-                            tmp = tmp + mem[i]
-                        else:
-                            if mem[i] == 0: #0으로 나누려 하면 에러처리
-                                return "ERROR : 0으로 나눌 순 없어용"
-                            else:
-                                tmp = tmp / mem[i]
-                else:
-                    return "ERROR : 올바르지 않은 자료형!"
-            else:
-                if i == args[0] :
+            index = i
+            i = eval(i,dic)
+            if isinstance(i,int) or isinstance(i,float): # 숫자일때
+                if index == 0 : #첫번째 원소일때
                     tmp = tmp + i
                 else:
-                    if i == 0: #0으로 나누려 하면 에러처리
+                    if i == 0:
                         return "ERROR : 0으로 나눌 순 없어용"
-                    else:
+                    else :
                         tmp = tmp / i
-        return tmp 
+            else:
+                return "ERROR : 올바르지 않은 자료형!"
+        return tmp   
 
     ##################수정요망####################
     elif x[0] == 'IF': ################ IF return 값 수정해줘야함 #############
@@ -253,7 +235,8 @@ def eval(x, dic):
         if not isinstance(var,str): #스트링이 아니면 에러처리
             return "ERROR : 입력값이 잘못됐어요.. (변수)"
 
-        if isinstance(eval(exp,dic), list):
+        
+        if isinstance(eval(exp,dic), list): # list이면..?
             mem[var] = eval(exp,dic)
             return mem[var]
         else:
@@ -476,6 +459,7 @@ def eval(x, dic):
             return False
 
     else:
+        # return "ERROR : 올바르지 않은 자료형!"
         proc = eval(x[0], dic)
         args = [eval(exp, dic) for exp in x[1:]]
         try: return proc(args)
@@ -517,6 +501,7 @@ def main():
             print(printlist(rv))
         else: # 리스트가 아니면
             print(rv)
+        #print(rv)
 
 if __name__ == "__main__":
     main()
