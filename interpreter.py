@@ -289,15 +289,14 @@ def eval(x):
     elif x[0] == 'MEMBER':
         (_, word, memberList) = x
         T = ["'"]
-        word = eval(word, dic)
-        memberList = eval(memberList, dic)
-        if memberList in mem:
-            memberList = mem[memberList][1]
-            startIndex = memberList.index(word[1])
-            T.append(memberList[startIndex:])
+        word = eval(word)
+        memberList = eval(memberList)
+        try:
+            startIndex = memberList[1].index(word)
+            T.append(memberList[1][startIndex:])
             return T
-        print("ERROR : 찾고자 하는 값이 리스트 안에 없어요ㅠ")
-        main()
+        except:
+            return False
     
     elif x[0]=='REMOVE':
         (_, var, exp)=x
@@ -529,6 +528,10 @@ def main():
         rv = eval(expression_parser(userInput).pop(0))
         if isinstance(rv, list):  # 리스트면
             print(printlist(rv))
+        elif rv == False:
+            print("NIL")
+        elif rv == True:
+            print("T")
         elif rv == None:
             print("Error : 잘못된 입력 값!")
         else:  # 리스트가 아니면
