@@ -145,11 +145,12 @@ def eval(x, dic):
     elif x[0] == '-':
         (_, *args) = x
         tmp = 0
+        index = 0
         for i in args:
-            index = i
+            index = index + 1
             i = eval(i,dic)
             if isinstance(i,int) or isinstance(i,float): # 숫자일때
-                if index == 0 : #첫번째 원소일때
+                if index == 1 : #첫번째 원소일때
                     tmp = tmp + i
                 else:
                     tmp = tmp - i
@@ -160,26 +161,30 @@ def eval(x, dic):
     elif x[0] == '*':
         (_, *args) = x
         tmp = 0
+        index = 0
         for i in args:
-            index = i
+            index = index + 1
             i = eval(i,dic)
             if isinstance(i,int) or isinstance(i,float): # 숫자일때
-                if index == 0 : #첫번째 원소일때
+                if index == 1 : #첫번째 원소일때
                     tmp = tmp + i
                 else:
                     tmp = tmp * i
             else:
                 return "ERROR : 올바르지 않은 자료형!"
+                
         return tmp   
+
 
     elif x[0] == '/':
         (_, *args) = x
         tmp = 0
+        index = 0
         for i in args:
-            index = i
+            index = index + 1
             i = eval(i,dic)
             if isinstance(i,int) or isinstance(i,float): # 숫자일때
-                if index == 0 : #첫번째 원소일때
+                if index == 1 : #첫번째 원소일때
                     tmp = tmp + i
                 else:
                     if i == 0:
@@ -459,13 +464,13 @@ def eval(x, dic):
             return False
 
     else:
-        # return "ERROR : 올바르지 않은 자료형!"
-        proc = eval(x[0], dic)
-        args = [eval(exp, dic) for exp in x[1:]]
-        try: return proc(args)
-        except TypeError:
-            args=[eval(exp,dic) for exp in x[0:]]
-            return args
+        return "ERROR : 올바르지 않은 자료형!"
+        # proc = eval(x[0], dic)
+        # args = [eval(exp, dic) for exp in x[1:]]
+        # try: return proc(args)
+        # except TypeError:
+        #     args=[eval(exp,dic) for exp in x[0:]]
+        #     return args
 
 def printlist(l):
     if l[0] == "'" and isinstance(l[1],list):
