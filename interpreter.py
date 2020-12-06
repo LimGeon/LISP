@@ -3,9 +3,7 @@ import math
 import operator as op
 from functools import reduce
 from parser1 import expression_parser
-import os
 
-dic_new2 = {}  # lambda식을 위한 딕셔너리
 
 mem = {}  # SETQ를 통한 변수 저장을 위한 딕셔너리
 
@@ -41,9 +39,6 @@ def isList(vlist):  # 리스트인지 확인하기 위한 함수 -> 리스트 �
 
 
 def list_procedure(*args):
-    if len(args) == 0:
-        print("ERROR : 입력값이 너무 적어요 ㅠㅠ")
-        main()
     T = ["'"]
     L = []
     # print("args 제대로 출력: ", args)
@@ -229,10 +224,11 @@ def eval(x):
         return list_procedure(*args)
 
     elif x[0] == 'ATOM':
+        (_ , *args) = x
+        if (len(args) != 1):
+            return "ERROR : 입력 값은 1개여야 합니다."
         (_, exp ,*args) = x
-        if(len(args)>0):
-            print("ERROR : 입력 값은 1개여야 합니다.")
-            main()
+
         exp = eval(exp)
         if isinstance(exp, list):
             return "NIL"
@@ -241,6 +237,9 @@ def eval(x):
         elif isinstance(exp, str):
             return True
     elif x[0] == 'NTH':
+        (_ , *args) = x
+        if (len(args) != 2):
+            return "ERROR : 입력 값의 개수가 잘못되었습니다."
         (_, exp, nthList) = x
         if not isinstance(eval(exp), int):
             print("ERROR : index 입력이 잘못되었습니다")
@@ -262,10 +261,11 @@ def eval(x):
                     main()
 
     elif x[0] == 'CONS':
-        (_, var, consList,*args) = x
-        if(len(args)>0):
-            print("ERROR : 입력이 잘못되었습니다")
-            main()
+        (_, *args) = x
+        if(len(args)!=2):
+            return "ERROR : 입력이 잘못되었습니다"
+        (_, var, consList) = x
+
         T = ["'"]
         L = []
         var = eval(var)
@@ -286,6 +286,9 @@ def eval(x):
         T.append(L)
         return T
     elif x[0] == 'MEMBER':
+        (_, *args) = x
+        if(len(args) != 2):
+            return "ERROR : 입력 인자의 개수가 잘못되었습니다."
         (_, word, memberList) = x
         T = ["'"]
         word = eval(word)
@@ -296,9 +299,12 @@ def eval(x):
             return T
         except:
             return False
-    
-    elif x[0]=='REMOVE':
-        (_, var, exp)=x
+
+    elif x[0] == 'REMOVE':
+        (_, *args) = x
+        if(len(args)!=2):
+            return "ERROR : 입력된 인자의 개수가 잘못되었습니다."
+        (_, var, exp) = x
         L = ["'"]
         word = eval(var)
         removeList = eval(exp)
@@ -310,6 +316,9 @@ def eval(x):
                 return L
 
     elif x[0] == 'ASSOC':
+        (_, *args) = x
+        if (len(args)!= 2):
+            return "ERROR : 입력된 인자의 개수가 잘못되었습니다."
         (_, key, assocList) = x
         # assocList 예시 ["'", [["'", ['ONE', 1]], ["'", ['TWO', 2]], ["'", ['THREE', 3]]]]
         key = eval(key)
@@ -322,6 +331,9 @@ def eval(x):
         main()
     
     elif x[0] == 'SUBST':
+        (_,*args) = x
+        if(len(args)!=3):
+            return "ERROR : 입력된 인자의 개수가 잘못되었습니다."
         (_, word, word_sub, substList) = x
         word = eval(word)
         word_sub = eval(word_sub)
@@ -348,19 +360,25 @@ def eval(x):
         (_, caddrList) = x
         return CAR_procedure(CDR_procedure(CDR_procedure(caddrList)))
 
-
     elif x[0] == 'REVERSE':
+        (_, *args) = x
+        if(len(args)!=1):
+            return "ERROR : 입력 인자의 개수가 잘못되었습니다."
         (_, reverseList) = x
-        if not isList(eval(reverseList)):
-            print("ERROR : 입력이 잘못 되었습니다")
-            main()
-        L = ["'"]
         exp = eval(reverseList)
+        if not isList(exp):
+            print("ERROR : 입력이 잘못 되었습니다")
+            #main()
+        L = ["'"]
         if isList(exp)[0]:
             exp[1].reverse()
             L.append(exp[1])
             return L
+
     elif x[0] == 'LENGTH':
+        (_, *args) = x
+        if(len(args) != 1):
+            return "ERROR : 입력 인자의 개수가 잘못되었습니다"
         (_, lengthList) = x
         if not isList(eval(lengthList)):
             print("ERROR : 입력이 잘못되었습니다")

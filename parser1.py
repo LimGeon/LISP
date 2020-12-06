@@ -85,12 +85,9 @@ def number_parser(data): #숫자로 시작하면
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
 
-def comment_parser(data):
-    commentIdx = data.find(';')
-    if commentIdx == -1:
-        return data
-    else:
-        return data[:commentIdx]
+# def comment_parser(data):
+#     commentIdx = data.find(';')
+#     return data[:commentIdx]
 
 def identifier_parser(data):
     identifier_reg_ex = re.compile('\\w+')
@@ -152,7 +149,6 @@ def expression_parser(data,*depth):
     res = value_parser(data)
     rest = res.pop(1)
     token = res.pop(0)
-
     if depth:
         depth = depth[0]
 
@@ -198,6 +194,7 @@ def main():
         global parseCnt
         parseCnt=0
         userInput = input("> ")
+
         userInput = comment_parser(userInput)
         print("\nparsing 과정 순서: ")
         print("\nparse 결과: ",expression_parser(userInput, 1))
