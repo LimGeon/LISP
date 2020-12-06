@@ -4,60 +4,60 @@ import operator as op
 from functools import reduce
 from parser1 import expression_parser
 
-#### 기본적인 연산들 (ex. 사칙연산) 을 위한 딕셔너리 ####
-lisp_to_python_dic = {
-    '+':lambda *x: reduce(op.add, *x), '-':lambda *x: reduce(op.sub, *x),
-    '*':lambda *x: reduce(op.mul, *x), '/':lambda *x: reduce(op.truediv, *x),
-    '>':lambda *x: reduce(op.gt, *x), '<':lambda *x: reduce(op.lt, *x),
-    '>=':lambda *x: reduce(op.ge, *x), '<=':lambda *x: reduce(op.le, *x),
-    '=':lambda *x: reduce(op.eq, *x),
-    ########### 밑으로 다 주석처리 해도되지않을까???##############33
-    'abs':     abs,
-    'append':  lambda *x: reduce(op.add, *x),
-    'apply':   lambda x: x[0](x[1:]),
-    'begin':   lambda *x: x[-1],
-    'car':     lambda x: x[0],
-    'cdr':     lambda x: x[1:],
-    'cons':    lambda x, y: [x] + y,
-    'eq?':     op.is_,
-    'equal?':  op.eq,
-    'length':  len,
-    'list':    lambda *x: list(x),
-    'list?':   lambda x: isinstance(x, list),
-    'map':     map,
-    'max':     max,
-    'min':     min,
-    'not':     op.not_,
-    'null?':   lambda x: x == [],
-    'number?': lambda x: isinstance(x, int) or isinstance(x, float),
-    'procedure?': callable,
-    'round':   round,
-    'symbol?': lambda x: isinstance(x, str),
-    'LIST' : 3,
-    }
+# #### 기본적인 연산들 (ex. 사칙연산) 을 위한 딕셔너리 ####
+# lisp_to_python_dic = {
+#     '+':lambda *x: reduce(op.add, *x), '-':lambda *x: reduce(op.sub, *x),
+#     '*':lambda *x: reduce(op.mul, *x), '/':lambda *x: reduce(op.truediv, *x),
+#     '>':lambda *x: reduce(op.gt, *x), '<':lambda *x: reduce(op.lt, *x),
+#     '>=':lambda *x: reduce(op.ge, *x), '<=':lambda *x: reduce(op.le, *x),
+#     '=':lambda *x: reduce(op.eq, *x),
+#     ########### 밑으로 다 주석처리 해도되지않을까???##############33
+#     'abs':     abs,
+#     'append':  lambda *x: reduce(op.add, *x),
+#     'apply':   lambda x: x[0](x[1:]),
+#     'begin':   lambda *x: x[-1],
+#     'car':     lambda x: x[0],
+#     'cdr':     lambda x: x[1:],
+#     'cons':    lambda x, y: [x] + y,
+#     'eq?':     op.is_,
+#     'equal?':  op.eq,
+#     'length':  len,
+#     'list':    lambda *x: list(x),
+#     'list?':   lambda x: isinstance(x, list),
+#     'map':     map,
+#     'max':     max,
+#     'min':     min,
+#     'not':     op.not_,
+#     'null?':   lambda x: x == [],
+#     'number?': lambda x: isinstance(x, int) or isinstance(x, float),
+#     'procedure?': callable,
+#     'round':   round,
+#     'symbol?': lambda x: isinstance(x, str),
+#     'LIST' : 3,
+#     }
 
-lisp_to_python_dic.update(vars(math))
+# lisp_to_python_dic.update(vars(math))
 
 dic_new2 = {} #lambda식을 위한 딕셔너리
 
 mem = {} #SETQ를 통한 변수 저장을 위한 딕셔너리
 
-def CAR_procedure(carList, dic):
-    if isList(eval(carList,dic))[0]: #true 이면
-        if isList(eval(carList,dic))[1] == 0: # 직접 입력
-            return eval(carList,dic)[1][0] #리스트의 첫번째 원소 return (원소)
-        elif isList(eval(carList,dic))[1] == 1: #저장된 리스트
-            return mem[eval(carList,dic)][1][0] #리스트의 첫번째 원소 return (원소)
+def CAR_procedure(carList):
+    if isList(eval(carList))[0]: #true 이면
+        if isList(eval(carList))[1] == 0: # 직접 입력
+            return eval(carList)[1][0] #리스트의 첫번째 원소 return (원소)
+        elif isList(eval(carList))[1] == 1: #저장된 리스트
+            return mem[eval(carList)][1][0] #리스트의 첫번째 원소 return (원소)
 
-def CDR_procedure(cdrList, dic):
-    if isList(eval(cdrList,dic))[0]: #true 이면
-        if isList(eval(cdrList,dic))[1] == 0: # 직접 입력
+def CDR_procedure(cdrList):
+    if isList(eval(cdrList))[0]: #true 이면
+        if isList(eval(cdrList))[1] == 0: # 직접 입력
             T = ["'"] # 리스트임을 나타내기 위한 quote
-            T.append(eval(cdrList,dic)[1][1:]) #리스트의 두번째 원소부터 return (리스트 형식)
+            T.append(eval(cdrList)[1][1:]) #리스트의 두번째 원소부터 return (리스트 형식)
             return T # 리스트 return
-        elif isList(eval(cdrList,dic))[1] == 1: #저장된 리스트
+        elif isList(eval(cdrList))[1] == 1: #저장된 리스트
             T = ["'"] # 리스트임을 나타내기 위한 quote
-            T.append(mem[eval(cdrList,dic)][1][1:]) #리스트의 두번째 원소부터 return (리스트 형식)
+            T.append(mem[eval(cdrList)][1][1:]) #리스트의 두번째 원소부터 return (리스트 형식)
             return T #리스트 return
 
 # def addQuote(vlist):
@@ -74,13 +74,6 @@ def isList(vlist): #리스트인지 확인하기 위한 함수 -> 리스트 형�
         if vlist in mem:
             if mem[vlist][0] == "'" and isinstance(mem[vlist][1],list):
                 return [True,1] #mem에 저장되어있는 list
-def lambda_procedure(parms, body, *args):
-    dic_new = {}
-    for k, v in list(zip(parms, list(*args))):
-        dic_new[k] = v
-    dic_new2.update(lisp_to_python_dic)
-    dic_new2.update(dic_new)
-    return eval(body, dic_new2)
 def list_procedure(*args):
     if len(args) == 0:
         return "ERROR : 입력값이 너무 적어요 ㅠㅠ"
@@ -88,10 +81,9 @@ def list_procedure(*args):
     L = []
     #print("args 제대로 출력: ", args)
     for k in args: #차례로 받아오기
-        if eval(k,lisp_to_python_dic)==None:
+        if eval(k)==None:
             return "ERROR : 잘못된 입력값"
-
-        L.append(eval(k,lisp_to_python_dic))
+        L.append(eval(k))
     T.append(L)
     return T
 
@@ -120,12 +112,12 @@ def zerop_procedure(var): # var이 0인지 판별
         return False        
 
 ########################### eval 함수 - 핵심 ###########################################
-def eval(x, dic):
+def eval(x):
     if isinstance(x, str):
         if x in mem:
             return mem[x]
-        elif x in lisp_to_python_dic:
-            return lisp_to_python_dic[x]
+        # elif x in lisp_to_python_dic:
+        #     return lisp_to_python_dic[x]
         # else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
         #     return "ERROR : 저장된 변수가 아닙니다..ㅠ"
     elif not isinstance(x, list):
@@ -140,7 +132,7 @@ def eval(x, dic):
         (_, *args) = x
         tmp = 0
         for i in args:
-            i = eval(i,dic)
+            i = eval(i)
             if isinstance(i, int) or isinstance(i, float): #숫자일때
                 tmp = tmp + i
             else:
@@ -153,7 +145,7 @@ def eval(x, dic):
         index = 0
         for i in args:
             index = index + 1
-            i = eval(i,dic)
+            i = eval(i)
             if isinstance(i,int) or isinstance(i,float): # 숫자일때
                 if index == 1 : #첫번째 원소일때
                     tmp = tmp + i
@@ -169,7 +161,7 @@ def eval(x, dic):
         index = 0
         for i in args:
             index = index + 1
-            i = eval(i,dic)
+            i = eval(i)
             if isinstance(i,int) or isinstance(i,float): # 숫자일때
                 if index == 1 : #첫번째 원소일때
                     tmp = tmp + i
@@ -187,7 +179,7 @@ def eval(x, dic):
         index = 0
         for i in args:
             index = index + 1
-            i = eval(i,dic)
+            i = eval(i)
             if isinstance(i,int) or isinstance(i,float): # 숫자일때
                 if index == 1 : #첫번째 원소일때
                     tmp = tmp + i
@@ -205,31 +197,27 @@ def eval(x, dic):
         (_, test, conseq, *alt) = x 
         if len(alt)>=2 : #alt 2개 이상이면 에러처리
             return "ERROR : 입력값이 너무 많아요 ㅠㅠ"
-        if eval(test, dic):
-            exp = eval(conseq, dic)
+        if eval(test):
+            exp = eval(conseq   )
         elif alt is None: # alt 가 없을때
             return False ###################이거 왜 해준거라했지 건아..? #################
         else:
-            exp = eval(alt[0], dic)
-        return eval(exp, dic)
+            exp = eval(alt[0])
+        return eval(exp)
     
     elif x[0] == 'COND':
         (_, *ifexp) = x
         for exp in ifexp:
             test = exp[0]
             conseq = exp[1]
-            if eval(test, dic):
-                return eval(conseq, dic)
+            if eval(test):
+                return eval(conseq)
 
     elif x[0] == 'PRINT':
         (_, val) = x
-        val = eval(val, dic)
+        val = eval(val)
         print(val)
 
-    elif x[0] == 'define':
-        (_, var, exp) = x
-        dic[var] = eval(exp, dic)
-    
     
     elif x[0] == 'SETQ': # argument 2개 아니면 error
         
@@ -252,7 +240,7 @@ def eval(x, dic):
         #     mem[var]=eval(exp,dic)
         #     return mem[var]
 
-        mem[var] = eval(exp,dic)
+        mem[var] = eval(exp)
         return mem[var]
 
 
@@ -264,7 +252,7 @@ def eval(x, dic):
     elif x[0] == 'REVERSE':
         (_, reverseList) = x
         L = ["'"]
-        exp = eval(reverseList, dic)
+        exp = eval(reverseList)
         if isList(exp)[0]:
             exp[1].reverse()
             L.append(exp[1])
@@ -272,7 +260,7 @@ def eval(x, dic):
 
     elif x[0] == 'ATOM':
         (_, exp) = x
-        exp = eval(exp, dic)
+        exp = eval(exp)
         if isinstance(exp, list):
             return False
         elif isinstance(exp, int) or isinstance(exp, float):
@@ -282,17 +270,17 @@ def eval(x, dic):
 
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
-        if isList(eval(nthList, dic))[0]:  # true 이면
-            if isList(eval(nthList, dic))[1] == 0:  # 직접 입력
-                return eval(nthList, dic)[1][eval(exp, dic)]
-            elif isList(eval(nthList, dic))[1] == 1:  # 저장된 리스트
-                return mem[eval(nthList, dic)][eval(exp, dic)]
+        if isList(eval(nthList))[0]:  # true 이면
+            if isList(eval(nthList))[1] == 0:  # 직접 입력
+                return eval(nthList)[1][eval(exp)]
+            elif isList(eval(nthList))[1] == 1:  # 저장된 리스트
+                return mem[eval(nthList)][eval(exp)]
     elif x[0]=='CONS':
         (_, var, consList) = x
         T=["'"]
         L=[]
-        var = eval(var, dic)
-        consList = eval(consList, dic)
+        var = eval(var)
+        consList = eval(consList)
         print(var)
         if isinstance(var,int) or isinstance(var,float):
             L.append(var)
@@ -330,8 +318,8 @@ def eval(x, dic):
     elif x[0]=='REMOVE':
         (_, var, exp)=x
         L = ["'"]
-        word=eval(var,dic)
-        removeList=eval(exp,dic)
+        word=eval(var)
+        removeList=eval(exp)
         while(True):
             try:
                 removeList[1].remove(word)
@@ -342,7 +330,7 @@ def eval(x, dic):
     elif x[0] == 'ASSOC':
         (_, key, assocList) = x 
         # assocList 예시 ["'", [["'", ['ONE', 1]], ["'", ['TWO', 2]], ["'", ['THREE', 3]]]]
-        key = eval(key, dic)
+        key = eval(key)
         #assocTuple 예시 [["'", ['ONE', 1]]
         for assocTuple in assocList[1]:
             if key == assocTuple[1][0]:
@@ -350,8 +338,8 @@ def eval(x, dic):
     
     elif x[0] == 'SUBST':
         (_, word, word_sub, substList) = x
-        word = eval(word, dic)
-        word_sub = eval(word_sub, dic)
+        word = eval(word)
+        word_sub = eval(word_sub)
         sub_idx = substList[1].index(word_sub)
         substList[1][sub_idx] = word
         return substList
@@ -361,20 +349,20 @@ def eval(x, dic):
     
     elif x[0] == 'CAR':
         (_, carList) = x
-        return CAR_procedure(carList, dic)
+        return CAR_procedure(carList)
     
     elif x[0] == 'CDR':
         (_, cdrList) = x
-        return CDR_procedure(cdrList, dic)
+        return CDR_procedure(cdrList)
 
     elif x[0] == 'CADDR':
         (_, caddrList) = x
-        return CAR_procedure(CDR_procedure(CDR_procedure ( caddrList, dic) , dic), dic)
+        return CAR_procedure(CDR_procedure(CDR_procedure ( caddrList) ))
 
     elif x[0] == 'REVERSE':
         (_, reverseList) = x
         L = ["'"]
-        exp = eval(reverseList, dic)
+        exp = eval(reverseList)
         if isList(exp)[0]:
             exp[1].reverse()
             L.append(exp[1])
@@ -398,12 +386,12 @@ def eval(x, dic):
         (_, *args) = x
         appendedList = [] #들어온 리스트들을 모두 담아줄 리스트
         for exp in args:
-            if isList(eval(exp,dic))[0]: #True면..
-                if isList(eval(exp,dic))[1] == 0: # 직접 입력
-                    for val in eval(exp,dic)[1]:
+            if isList(eval(exp))[0]: #True면..
+                if isList(eval(exp))[1] == 0: # 직접 입력
+                    for val in eval(exp)[1]:
                         appendedList.append(val)
-                elif isList(eval(exp,dic))[1]==1: #저장된 리스트
-                    for val in mem[eval(exp,dic)][1]:
+                elif isList(eval(exp))[1]==1: #저장된 리스트
+                    for val in mem[eval(exp)][1]:
                         appendedList.append(val)
         T = ["'"]
         T.append(appendedList)
@@ -414,14 +402,14 @@ def eval(x, dic):
         (_, exp) = x
         if exp=='':
             return True
-        L=eval(exp,dic)
+        L=eval(exp)
         if isList(L)[0]:
             return L[1]==[]
         else:
             return False
     elif x[0] == 'MINUSP':
         (_, exp) = x
-        exp = eval(exp, dic)
+        exp = eval(exp)
         if numberp_procedure(exp) == True:
             if exp < 0:
                 return True
@@ -433,39 +421,35 @@ def eval(x, dic):
     elif x[0] == 'EQUAL':
         (_, var1, var2)=x
         try:
-            return eval(var1,dic)==eval(var2,dic)
+            return eval(var1)==eval(var2)
         except TypeError:
             return False
 
     elif x[0] == '<':
         (_, var1, var2)=x
         try:
-            return eval(var1,dic)<eval(var2,dic)
+            return eval(var1)<eval(var2)
         except TypeError:
             return False
     
     elif x[0] == '=':
         (_, var1, var2)=x
         try:
-            return eval(var1,dic) == eval(var2,dic)
+            return eval(var1) == eval(var2)
         except TypeError:
             return False
 
     elif x[0] == '>=':
         (_, var1, var2)=x
         try:
-            return eval(var1,dic)>=eval(var2,dic)
+            return eval(var1)>=eval(var2)
         except TypeError:
             return False
         
-            
-    elif x[0] == 'lambda':
-        (_, parms, body, *args) = x
-        return lambda_procedure(parms, body, args)
 
     elif x[0] == 'STRINGP':
         (_,var)=x
-        if isinstance(eval(x,dic),str):
+        if isinstance(eval(x),str):
             return True
         else:
             return False
@@ -508,7 +492,7 @@ def printlist(l):
 def main():
     while(True):
         userInput = input("> ")
-        rv = eval(expression_parser(userInput).pop(0), lisp_to_python_dic)
+        rv = eval(expression_parser(userInput).pop(0))
         if isinstance(rv, list): # 리스트면
             print(printlist(rv))
         elif rv == None:
