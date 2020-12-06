@@ -254,12 +254,14 @@ def eval(x):
                 try:
                     return eval(nthList)[1][eval(exp)]
                 except IndexError:
-                    print("ERROR: Index에 벗어났습니다."
+                    print("ERROR: Index에 벗어났습니다.")
+                    main()
             elif isList(eval(nthList))[1] == 1:  # 저장된 리스트
                 try:
                     return mem[eval(nthList)][eval(exp)]
                 except IndexError:
-                    print("ERROR: Index에 벗어났습니다"
+                    print("ERROR: Index에 벗어났습니다")
+                    main()
 
     elif x[0] == 'CONS':
         (_, var, consList,*args) = x
