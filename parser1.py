@@ -79,7 +79,10 @@ def number_parser(data): #숫자로 시작하면
 
 def comment_parser(data):
     commentIdx = data.find(';')
-    return data[:commentIdx]
+    if commentIdx == -1:
+        return data
+    else:
+        return data[:commentIdx]
 
 def identifier_parser(data):
     identifier_reg_ex = re.compile('\\w+')
@@ -141,12 +144,19 @@ def expression_parser(data):
     res = value_parser(data)
     rest = res.pop(1)
     token = res.pop(0)
+    # print("data: ",data)
+    # print("rest: ", rest)
+    # print("token: ",token)
+
     if token == '(':
         L = []
         while rest[0] != ')':
             nex = expression_parser(rest)
             rest = nex.pop(1)
             token = nex.pop(0)
+            # print("nex: ",nex)
+            # print("rest: ", rest)
+            # print("token: ",token)
             #print(token)
             if token[0] == ' ' or token == '\n':
                 continue
