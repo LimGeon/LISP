@@ -77,12 +77,9 @@ def number_parser(data): #숫자로 시작하면
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
 
-def comment_parser(data):
-    commentIdx = data.find(';')
-    if commentIdx == -1:
-        return data
-    else:
-        return data[:commentIdx]
+# def comment_parser(data):
+#     commentIdx = data.find(';')
+#     return data[:commentIdx]
 
 def identifier_parser(data):
     identifier_reg_ex = re.compile('\\w+')
@@ -144,19 +141,12 @@ def expression_parser(data):
     res = value_parser(data)
     rest = res.pop(1)
     token = res.pop(0)
-    # print("data: ",data)
-    # print("rest: ", rest)
-    # print("token: ",token)
-
     if token == '(':
         L = []
         while rest[0] != ')':
             nex = expression_parser(rest)
             rest = nex.pop(1)
             token = nex.pop(0)
-            # print("nex: ",nex)
-            # print("rest: ", rest)
-            # print("token: ",token)
             #print(token)
             if token[0] == ' ' or token == '\n':
                 continue
@@ -180,7 +170,7 @@ def main():
     #     data = f.read().strip()
     while(True):
         userInput = input("> ")
-        userInput = comment_parser(userInput)
+        # userInput = comment_parser(userInput)
         print(expression_parser(userInput))
 
 if __name__ == "__main__":
