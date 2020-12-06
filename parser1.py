@@ -77,7 +77,9 @@ def number_parser(data): #숫자로 시작하면
     if number_match:
         return[data[:number_match.end()], data[number_match.end():]]
 
-
+def comment_parser(data):
+    commentIdx = data.find(';')
+    return data[:commentIdx]
 
 def identifier_parser(data):
     identifier_reg_ex = re.compile('\\w+')
@@ -168,6 +170,7 @@ def main():
     #     data = f.read().strip()
     while(True):
         userInput = input("> ")
+        userInput = comment_parser(userInput)
         print(expression_parser(userInput))
 
 if __name__ == "__main__":
