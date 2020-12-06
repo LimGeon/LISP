@@ -88,6 +88,9 @@ def list_procedure(*args):
     L = []
     #print("args 제대로 출력: ", args)
     for k in args: #차례로 받아오기
+        if eval(k,lisp_to_python_dic)==None:
+            return "ERROR : 잘못된 입력값"
+
         L.append(eval(k,lisp_to_python_dic))
     T.append(L)
     return T
