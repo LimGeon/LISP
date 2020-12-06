@@ -1,3 +1,13 @@
+"""
+제작자:
+유효창 20190551
+정설희 20193574
+임  건 20192848
+
+파일명: interpreter.py
+완료 날짜: 2020.12.06
+"""
+
 # interpreter
 import math
 import operator as op
@@ -57,7 +67,9 @@ def list_procedure(*args):
 
 
 def numberp_procedure(var):
-    if isinstance(var, int) or isinstance(var, float):
+    if isinstance(var, bool):
+        return False
+    elif isinstance(var, int) or isinstance(var, float):
         return True
     elif isinstance(var, str):
         if var in mem:
@@ -93,6 +105,8 @@ def eval(x):
             #return lisp_to_python_dic[x]
         elif x[0] == '"' and x[-1] == '"':
             return x
+        else:
+            return False
             # else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
         #     print("ERROR : 저장된 변수가 아닙니다..ㅠ"
     elif not isinstance(x, list):
@@ -399,11 +413,11 @@ def eval(x):
     ########## Predicate 함수 ############
     elif x[0] == 'NULL':
         (_, exp) = x
-        if exp == '':
+        exp = eval(exp)
+        if exp == False:
             return True
-        L = eval(exp)
-        if isList(L)[0]:
-            return L[1] == []
+        if isList(exp)[0]:
+            return exp[1] == []
         else:
             return "NIL"
     elif x[0] == 'MINUSP':
@@ -477,12 +491,12 @@ def eval(x):
     elif x[0] == 'STRINGP':
         (_, *var) = x
         if (len(var) >= 2):
-            print("ERROR : 인자 입력이 잘못되었습니다")
-            main()
-        if isinstance(eval(var), str):
-            return True
-        else:
-            return "NIL"
+            return False
+        if isinstance(eval(var[0]), str):
+            if len(eval(var[0])) > 2:
+                if eval(var[0])[0] == '"' and eval(var[0])[-1] == '"':
+                    return True
+        return False
 
     # else:
     #     print("ERROR : 올바르지 않은 자료형!"
