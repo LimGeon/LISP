@@ -536,7 +536,6 @@ def main():
             print("Error : 잘못된 입력 값!")
         else:  # 리스트가 아니면
             print(rv)
-        # print(rv)
 
 
 if __name__ == "__main__":
