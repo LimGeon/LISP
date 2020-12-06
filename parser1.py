@@ -1,8 +1,16 @@
-### Lisp Intrepreter in Python
-## Parser
-# hyo test
+"""
+제작자:
+유효창 20190551
+정설희 20193574
+임  건 20192848
+
+파일명: parser1.py
+완료 날짜: 2020.12.06
+"""
 from functools import reduce
 import re 
+
+parseCnt = 0
 
 def bracket_parser(data): # ( 가 처음오면 잘라주기
     if data[0] == '(': 
@@ -137,21 +145,35 @@ def atom(s):
         except ValueError:
             return str(s)
 
-def expression_parser(data):
+def expression_parser(data,*depth):
     res = value_parser(data)
     rest = res.pop(1)
     token = res.pop(0)
+    if depth:
+        depth = depth[0]
+
     if token == '(':
         L = []
         while rest[0] != ')':
-            nex = expression_parser(rest)
+            if depth:
+                nex = expression_parser(rest,depth+1)
+            else:
+                nex = expression_parser(rest)
             rest = nex.pop(1)
             token = nex.pop(0)
-            #print(token)
+
             if token[0] == ' ' or token == '\n':
                 continue
             L.append(atom(token))
         rest = rest[1:]
+        if depth:
+            global parseCnt
+            global tmpCompare
+            for i in range(1,3):
+                parseCnt = parseCnt + 1
+                print(str(parseCnt).rjust(2), "번째:","(파스트리 깊이:",depth,"): ", L[i])
+            parseCnt = parseCnt + 1
+            print(str(parseCnt).rjust(2), "번째:","(파스트리 깊이:",depth-1,"): ", L)
         return [L, rest]
     else:
         return [token, rest]
@@ -169,9 +191,13 @@ def main():
     # with open(file_name, 'r') as f:
     #     data = f.read().strip()
     while(True):
+        global parseCnt
+        parseCnt=0
         userInput = input("> ")
-        # userInput = comment_parser(userInput)
-        print(expression_parser(userInput))
+
+        userInput = comment_parser(userInput)
+        print("\nparsing 과정 순서: ")
+        print("\nparse 결과: ",expression_parser(userInput, 1))
 
 if __name__ == "__main__":
     main()
