@@ -378,7 +378,7 @@ def eval(x):
         if isList(L)[0]:
             return L[1] == []
         else:
-            return False
+            return "NIL"
     elif x[0] == 'MINUSP':
         (_, exp) = x
         exp = eval(exp)
@@ -386,9 +386,9 @@ def eval(x):
             if exp < 0:
                 return True
             else:
-                return False
+                return "NIL"
         else:
-            print("Error")
+            return "ERROR : 숫자를 입력하세요"
 
     elif x[0] == 'EQUAL':
         (_, var1, var2, *args) = x
