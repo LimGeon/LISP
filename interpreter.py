@@ -4,42 +4,6 @@ import operator as op
 from functools import reduce
 from parser1 import expression_parser
 
-# #### 기본적인 연산들 (ex. 사칙연산) 을 위한 딕셔너리 ####
-# lisp_to_python_dic = {
-#     '+':lambda *x: reduce(op.add, *x), '-':lambda *x: reduce(op.sub, *x),
-#     '*':lambda *x: reduce(op.mul, *x), '/':lambda *x: reduce(op.truediv, *x),
-#     '>':lambda *x: reduce(op.gt, *x), '<':lambda *x: reduce(op.lt, *x),
-#     '>=':lambda *x: reduce(op.ge, *x), '<=':lambda *x: reduce(op.le, *x),
-#     '=':lambda *x: reduce(op.eq, *x),
-#     ########### 밑으로 다 주석처리 해도되지않을까???##############33
-#     'abs':     abs,
-#     'append':  lambda *x: reduce(op.add, *x),
-#     'apply':   lambda x: x[0](x[1:]),
-#     'begin':   lambda *x: x[-1],
-#     'car':     lambda x: x[0],
-#     'cdr':     lambda x: x[1:],
-#     'cons':    lambda x, y: [x] + y,
-#     'eq?':     op.is_,
-#     'equal?':  op.eq,
-#     'length':  len,
-#     'list':    lambda *x: list(x),
-#     'list?':   lambda x: isinstance(x, list),
-#     'map':     map,
-#     'max':     max,
-#     'min':     min,
-#     'not':     op.not_,
-#     'null?':   lambda x: x == [],
-#     'number?': lambda x: isinstance(x, int) or isinstance(x, float),
-#     'procedure?': callable,
-#     'round':   round,
-#     'symbol?': lambda x: isinstance(x, str),
-#     'LIST' : 3,
-#     }
-
-# lisp_to_python_dic.update(vars(math))
-
-dic_new2 = {}  # lambda식을 위한 딕셔너리
-
 mem = {}  # SETQ를 통한 변수 저장을 위한 딕셔너리
 
 
@@ -61,12 +25,6 @@ def CDR_procedure(cdrList):
             T = ["'"]  # 리스트임을 나타내기 위한 quote
             T.append(mem[eval(cdrList)][1][1:])  # 리스트의 두번째 원소부터 return (리스트 형식)
             return T  # 리스트 return
-
-
-# def addQuote(vlist):
-#     reList = ["'",]
-#     reList.append(vlist)
-#     return reList
 
 def isList(vlist):  # 리스트인지 확인하기 위한 함수 -> 리스트 형식이고 첫번째 원소 값이 '인 경우에 -> 심볼인지 리스트인지
     if isinstance(vlist, list):  # 리스트 형식이면
