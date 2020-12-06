@@ -116,8 +116,8 @@ def eval(x):
     if isinstance(x, str):
         if x in mem:
             return mem[x]
-        elif x in lisp_to_python_dic:
-            return lisp_to_python_dic[x]
+        # elif x in lisp_to_python_dic:
+        #     return lisp_to_python_dic[x]
         elif x[0] == '"' and x[-1] == '"':
             return x
                   # else: #quote가 붙여져 있지도 않고, mem에 저장도 안된것..
@@ -273,11 +273,21 @@ def eval(x):
 
     elif x[0] == 'NTH':
         (_, exp, nthList) = x
+        if not isinstance(eval(exp),int):
+            return "ERROR : index 입력이 잘못되었습니다"
+        if not isList(eval(nthList)):
+            return "ERROR : 입력 형태가 잘못되었습니다."
         if isList(eval(nthList))[0]:  # true 이면
             if isList(eval(nthList))[1] == 0:  # 직접 입력
-                return eval(nthList)[1][eval(exp)]
+                try:
+                    return eval(nthList)[1][eval(exp)]
+                except IndexError:
+                    return "ERROR : Index에 벗어났습니다."
             elif isList(eval(nthList))[1] == 1:  # 저장된 리스트
-                return mem[eval(nthList)][eval(exp)]
+                try:
+                    return mem[eval(nthList)][eval(exp)]
+                except IndexError:
+                    return "ERROR : Index에 벗어났습니다"
     elif x[0]=='CONS':
         (_, var, consList) = x
         T=["'"]
@@ -318,17 +328,22 @@ def eval(x):
             T.append(memberList[startIndex:])
             return T
     
-    elif x[0]=='REMOVE':
-        (_, var, exp)=x
+    elif x[0] == 'REMOVE':
+        (_, var, exp) = x
         L = ["'"]
-        word=eval(var)
-        removeList=eval(exp)
-        while(True):
-            try:
-                removeList[1].remove(word)
-            except ValueError:
-                L.append(removeList[1])
-                return L
+        word = eval(var)
+        removeList = eval(exp)
+        if not isList(removeList)[0]:
+            return "ERROR : 입력이 잘 못 되었습니다"
+        if word in removeList:
+            while (True):
+                try:
+                    removeList[1].remove(word)
+                except ValueError:
+                    L.append(removeList[1])
+                    return L
+        else:
+            return "ERROR : 제거할 대상이 List에 없습니다"
     
     elif x[0] == 'ASSOC':
         (_, key, assocList) = x 
@@ -364,21 +379,26 @@ def eval(x):
 
     elif x[0] == 'REVERSE':
         (_, reverseList) = x
+        if not isList(eval(reverseList)):
+            return "입력이 잘못 되었습니다"
         L = ["'"]
         exp = eval(reverseList)
         if isList(exp)[0]:
             exp[1].reverse()
             L.append(exp[1])
             return L
-    elif x[0]=='LENGTH':
-        (_,lengthList)=x
-        if isList(lengthList)[0]:
-            if isList(lengthList)[1]==0:
-                return len(lengthList[1])
-            elif isList(lengthList)[1]==1:
-                return len(mem[lengthList][1])
-        else :
-            return False
+
+    elif x[0] == 'LENGTH':
+        (_, lengthList) = x
+        if not isList(eval(lengthList)):
+            return "ERROR : 입력이 잘못되었습니다"
+        if isList(eval(lengthList))[0]:
+            if isList(eval(lengthList))[1] == 0:
+                return len(eval(lengthList)[1])
+            elif isList(eval(lengthList))[1] == 1:
+                return len(mem[eval(lengthList)][1])
+
+
     elif x[0] == 'NUMBERP':
         (_, var) = x
         return numberp_procedure(var)
@@ -422,11 +442,44 @@ def eval(x):
             print("Error")
     
     elif x[0] == 'EQUAL':
-        (_, var1, var2)=x
+        (_, var1, var2) = x
         try:
-            return eval(var1)==eval(var2)
+            if eval(var1) == eval(var2):
+                return True
+            else:
+                return "NIL"
         except TypeError:
-            return False
+            return "NIL"
+
+    elif x[0] == '<':
+        (_, var1, var2) = x
+        try:
+            if eval(var1) < eval(var2):
+                return True
+            else:
+                return "NIL"
+        except TypeError:
+            return "NIL"
+
+    elif x[0] == '=':
+        (_, var1, var2) = x
+        try:
+            if eval(var1) == eval(var2):
+                return True
+            else:
+                return "NIL"
+        except TypeError:
+            return "NIL"
+
+    elif x[0] == '>=':
+        (_, var1, var2) = x
+        try:
+            if eval(var1, dic) >= eval(var2, dic):
+                return True
+            else:
+                return "NIL"
+        except TypeError:
+            return "NIL"
 
     elif x[0] == '<':
         (_, var1, var2)=x
@@ -451,12 +504,13 @@ def eval(x):
         
 
     elif x[0] == 'STRINGP':
-        (_,*var)=x
-        if len(var) == 1:
-            if isinstance(eval(var,dic),str):
-                return True
-        return False
-
+        (_, *var) = x
+        if(len(var)>=2):
+            return "NIL"
+        if isinstance(eval(var), str):
+            return True
+        else:
+            return "NIL"
     # else:
     #     return "ERROR : 올바르지 않은 자료형!"
         # proc = eval(x[0], dic)
