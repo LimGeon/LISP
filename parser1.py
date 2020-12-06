@@ -38,7 +38,7 @@ def list_parser(data): #리스트 생성 # ( 다음 부터 불러옴..
             index = index + 1
             return [L,index]
         elif data[index] not in ('\t','\n','\r','\f','\v'): #공백이 아니면
-           list_reg_ex = re.compile('\\w+')
+           list_reg_ex = re.compile('\\w+') #뒤에 문자 올때 쭉 (공백 or 특수기호 오면 cut)
            list_match = list_reg_ex.match(data[index:])
            if list_match:
                L.append(atom(data[index:list_match.end()+index].upper()))
