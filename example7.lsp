@@ -1,0 +1,5 @@
+(SETQ X 3)
+(IF (> X 3) (PRINT X))
+(IF (> X 3) (PRINT X) 
+(IF (> X 3) (PRINT X) (+ X 5)
+(COND ((> X 0) (+ X 1))((= X 0) (+ X 2))((< X 0) (+ X 3)))
