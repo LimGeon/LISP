@@ -1,5 +1,6 @@
-((define x 10)
-(define y 5)
-(lambda (x y) (* x y) 5 2)
-(* x x))
-
+(REVERSE '(A B C D))
+(APPEND '(A C) '(B D) '(E F))
+(LENGTH '(A B C))
+(LENGTH '((A B C)))
+(SETQ CLUB '(TOM HARRY JOHN DANIEL))
+(MEMBER 'HARRY CLUB)

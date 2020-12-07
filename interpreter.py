@@ -9,6 +9,8 @@
 """
 
 # interpreter
+#import module
+import sys
 import math
 import operator as op
 from functools import reduce
@@ -259,10 +261,10 @@ def eval(x):
         if not isinstance(eval(exp), int):
             print("ERROR : index 입력이 잘못되었습니다")
             main()
-        if not isList(eval(nthList)):
+        elif not isList(eval(nthList)):
             print("ERROR : 입력 형태가 잘못되었습니다.")
             main()
-        if isList(eval(nthList))[0]:  # true 이면
+        elif isList(eval(nthList))[0]:  # true 이면
             if isList(eval(nthList))[1] == 0:  # 직접 입력
                 try:
                     return eval(nthList)[1][eval(exp)]
@@ -566,24 +568,50 @@ def printlist(l):
 
         tmp = tmp + ")"
         return tmp
+        
+def rightPrint(rv):
+    if isinstance(rv, list):  # 리스트면
+        print(printlist(rv))
+    elif isinstance(rv, bool):
+        if rv == False:
+            print("NIL")
+        elif rv == True:
+            print("T")
+    elif rv == None:
+        print("Error : 잘못된 입력 값!")
+    else:  # 리스트가 아니면
+        print(rv)
 
+f = "input file"
+savedLine = 0
+eof = False
 
 def main():
-    while (True):
-        userInput = input("> ")
-        rv = eval(expression_parser(userInput).pop(0))
-        if isinstance(rv, list):  # 리스트면
-            print(printlist(rv))
-        elif isinstance(rv, bool):
-            if rv == False:
-                print("NIL")
-            elif rv == True:
-                print("T")
-        elif rv == None:
-            print("Error : 잘못된 입력 값!")
-        else:  # 리스트가 아니면
-            print(rv)
-
+    
+    try: #명령어를 파일로 입력받을 시
+        f=open(sys.argv[1],'r', encoding='UTF8')
+        datas = f.readlines()
+        nowLine = 0
+        global eof
+        global savedLine
+        for line in datas:
+            if savedLine <= nowLine:
+                savedLine = savedLine + 1
+                if line[-1] == '\n' or line[-1] == '\t':
+                    line=line[:-1]
+                if line:
+                    print(">",line)
+                    rv = eval(expression_parser(line).pop(0))
+                    if not eof:
+                        rightPrint(rv)
+            nowLine = nowLine + 1
+        eof = True
+        f.close()
+    except: #파일 없이 실행시킬 경우 인터프리터 작동
+        while True:
+            line = input('> ')
+            rv = eval(expression_parser(line).pop(0))
+            rightPrint(rv)
 
 if __name__ == "__main__":
     main()
