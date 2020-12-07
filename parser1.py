@@ -8,9 +8,11 @@
 완료 날짜: 2020.12.06
 """
 from functools import reduce
-import re 
+import re
 
 parseCnt = 0
+
+
 
 def bracket_parser(data): # ( 가 처음오면 잘라주기
     if data[0] == '(': 
@@ -154,21 +156,24 @@ def expression_parser(data,*depth):
 
     if token == '(':
         L = []
-        while rest[0] != ')':
-            if depth:
-                nex = expression_parser(rest,depth+1)
-            else:
-                nex = expression_parser(rest)
-            rest = nex.pop(1)
-            token = nex.pop(0)
+        try:
+            while rest[0] != ')':
+                if depth:
+                    nex = expression_parser(rest,depth+1)
+                else:
+                    nex = expression_parser(rest)
+                rest = nex.pop(1)
+                token = nex.pop(0)
 
-            if token[0] == ' ' or token == '\n':
-                continue
-            L.append(atom(token))
+                if token[0] == ' ' or token == '\n':
+                    continue
+                L.append(atom(token))
+        except:
+            print("ERROR")
         rest = rest[1:]
         if depth:
             global parseCnt
-            global tmpCompare
+            
             for i in range(1,3):
                 parseCnt = parseCnt + 1
                 print(str(parseCnt).rjust(2), "번째:","(파스트리 깊이:",depth,"): ", L[i])
@@ -187,9 +192,6 @@ key_parser = any_one_parser_factory(declarator_parser, lambda_parser, if_parser,
                                     binary_parser, arithemetic_parser, unary_parser)
 
 def main():
-    # file_name = input()
-    # with open(file_name, 'r') as f:
-    #     data = f.read().strip()
     while(True):
         global parseCnt
         parseCnt=0

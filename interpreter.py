@@ -16,8 +16,8 @@ import operator as op
 from functools import reduce
 from parser1 import expression_parser
 
-
 mem = {}  # SETQ를 통한 변수 저장을 위한 딕셔너리
+
 
 
 def CAR_procedure(carList):
@@ -182,8 +182,7 @@ def eval(x):
                 main()
         return tmp
 
-        ##################수정요망####################
-    elif x[0] == 'IF':  ################ IF return 값 수정해줘야함 #############
+    elif x[0] == 'IF':  
         (_, test, conseq, *alt) = x
         if len(alt) >= 2:  # alt 2개 이상이면 에러처리
             print("ERROR : 입력값이 너무 많아요 ㅠㅠ")
@@ -437,8 +436,9 @@ def eval(x):
         exp = eval(exp)
         if exp == False:
             return True
-        if isList(exp)[0]:
-            return exp[1] == []
+        if type(exp) == LIST:
+            if isList(exp)[0]:
+                return exp[1] == []
         else:
             return False
     elif x[0] == 'MINUSP':
